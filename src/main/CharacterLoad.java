@@ -25,56 +25,21 @@ public class CharacterLoad {
 
     private String currentDirection = "";
 
-    public CharacterLoad(int startX, int startY) {
+    public CharacterLoad(int startX, int startY, ResourceLoader resourceLoader) {
         this.x = startX;
         this.y = startY;
 
-        downSprites = new BufferedImage[2];
-        try {
-            downSprites[0] = ImageIO.read(new File("res/Player/Fronwalk1.png"));
-            downSprites[1] = ImageIO.read(new File("res/Player/Frontwalk2.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Error loading down walk sprites!");
-        }
+        downSprites = resourceLoader.getSpriteArray("down");
+        rightSprites = resourceLoader.getSpriteArray("right");
+        upSprites = resourceLoader.getSpriteArray("up");
+        leftSprites = resourceLoader.getSpriteArray("left");
 
-        rightSprites = new BufferedImage[2];
-        try {
-            rightSprites[0] = ImageIO.read(new File("res/Player/RightWalk1.png"));
-            rightSprites[1] = ImageIO.read(new File("res/Player/RightWalk2.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Error loading right walk sprites!");
-        }
+        upStaySprites = resourceLoader.getImage("upStay");
+        downStaySprites = resourceLoader.getImage("downStay");
+        leftStaySprites = resourceLoader.getImage("leftStay");
+        rightStaySprites = resourceLoader.getImage("rightStay");
 
-        upSprites = new BufferedImage[2];
-        try {
-            upSprites[0] = ImageIO.read(new File("res/Player/BackWalk1.png"));
-            upSprites[1] = ImageIO.read(new File("res/Player/Backwalk2.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Error loading up walk sprites!");
-        }
-
-
-        leftSprites = new BufferedImage[2];
-        try {
-            leftSprites[0] = ImageIO.read(new File("res/Player/LeftWalk1.png"));
-            leftSprites[1] = ImageIO.read(new File("res/Player/LefWalk2.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Error loading left walk sprites!");
-        }
-
-        try{
-            upStaySprites = ImageIO.read(new File("res/Player/Back.png"));
-            downStaySprites = ImageIO.read(new File("res/Player/Front.png"));
-            leftStaySprites = ImageIO.read(new File("res/Player/LeftSide.png"));
-            rightStaySprites = ImageIO.read(new File("res/Player/SideRight.png"));
-        } catch (IOException e){
-            e.printStackTrace();
-            System.out.println("Error loading stays sprites!");
-        }
+        System.out.println("Character initialized with preloaded resources!");
 
     }
 

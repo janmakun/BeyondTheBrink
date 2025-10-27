@@ -11,28 +11,40 @@ public class GamePanel extends JPanel implements Runnable {
     private final int HEIGHT = 720;
     private PixelPosition pixelPosition;
 
+    //try
     private Map1 map1;
+    private Map2 map2;
+    public int currentMap = 1;
+
     private KeyHandler keyHandler;
     private Thread gameThread;
     private Camera camera;
     private Collision collision;
-    CharacterLoad character = new CharacterLoad(100, 100);
+    private CharacterLoad character;
 
-    public GamePanel() {
+    private ResourceLoader resourceLoader;
+
+
+
+    public GamePanel(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setBackground(Color.BLACK);
         this.setDoubleBuffered(true);
 
-        keyHandler = new KeyHandler();
+        keyHandler = new KeyHandler(this);
         camera = new Camera(WIDTH, HEIGHT);
 
         // Initialize character at starting position
-        character = new CharacterLoad(100, 100);
+        character = new CharacterLoad(100, 100, resourceLoader);
 
         // Initialize map
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
-        map1 = new Map1();
+
+        //try
+        map1 = new Map1(resourceLoader);
+        map2 = new Map2(resourceLoader);
 
         // Initialize collision checker with rectangle walls
         collision = new Collision();
@@ -51,8 +63,8 @@ public class GamePanel extends JPanel implements Runnable {
                 int worldY = e.getY() + camera.getY();
 
                 // Add a 30x30 wall at clicked position
-                collision.addWall(worldX, worldY, 30, 30);
-                System.out.println("Wall added at World X=" + worldX + ", Y=" + worldY);
+//                collision.addWall(worldX, worldY, 30, 30);
+//                System.out.println("Wall added at World X=" + worldX + ", Y=" + worldY);
             }
         };
         this.addMouseListener(pixelPosition);
@@ -104,7 +116,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         // Check collision before updating position
-        if (!collision.checkCollision(nextX, nextY, character.getWidth(), character.getHeight())) {
+        if (!collision.checkCollision(nextX + 10, nextY, character.getWidth() -20 , character.getHeight())) {
             character.setPosition(nextX, nextY);
         } else {
             // Collision detected, stay at old position
@@ -113,6 +125,21 @@ public class GamePanel extends JPanel implements Runnable {
 
         character.update(moving, direction);
         camera.followCharacter(character);
+    }
+
+    // Try
+    public void switchMap() {
+        if (currentMap == 1) {
+            currentMap = 2;
+            character.setPosition(-780, -800); // new starting point for map2
+            collision.loadMap2Collisions(); // custom method for map2
+            System.out.println("Switched to Map 2");
+        } else {
+            currentMap = 1;
+            character.setPosition(100, 200);
+            collision.loadMap1Collisions();
+            System.out.println("Switched to Map 1");
+        }
     }
 
     protected void paintComponent(Graphics g) {
@@ -127,10 +154,16 @@ public class GamePanel extends JPanel implements Runnable {
         g2.translate(-cameraX, -cameraY);
 
         // Draw map at world coordinates
-        map1.draw(g, 5000, 5000, 0, 0);
+        //Try
+        if (currentMap == 1) {
+            map1.draw(g, 5000, 5000, 0, 0);
+        } else if (currentMap == 2) {
+            map2.draw(g, 4000, 4000, 0, 0);
+        }
+
 
         // Draw collision walls
-//        collision.drawWalls(g2);
+        collision.drawWalls(g2);
 
         // Draw character at world coordinates
         character.draw(g, 0, 0);

@@ -9,7 +9,8 @@ import java.io.IOException;
 public class Map1 {
     private BufferedImage background;
 
-    public Map1() {
+
+    public Map1(ResourceLoader resourceLoader) {
         try {
             background = ImageIO.read(new File("res/Map/5000kMap.png"));
         } catch (IOException e) {

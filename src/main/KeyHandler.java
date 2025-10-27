@@ -5,6 +5,11 @@ import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
     private boolean upPressed, downPressed, leftPressed, rightPressed;
+    private GamePanel gp; // Added missing field declaration
+
+    public KeyHandler(GamePanel gp) {
+        this.gp = gp;
+    }
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -14,6 +19,10 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_DOWN) downPressed = true;
         if (code == KeyEvent.VK_LEFT) leftPressed = true;
         if (code == KeyEvent.VK_RIGHT) rightPressed = true;
+
+        if (code == KeyEvent.VK_M) {
+            gp.switchMap();
+        }
 
     }
     @Override
@@ -34,5 +43,3 @@ public class KeyHandler implements KeyListener {
     public boolean isRightPressed() { return rightPressed; }
 
 }
-
-

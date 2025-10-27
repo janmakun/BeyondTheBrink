@@ -9,7 +9,7 @@ import java.io.File;
 public class Map2 {
     private BufferedImage background;
 
-    public Map2() {
+    public Map2(ResourceLoader resourceLoader) {
         try {
             // Fixed: Use File path like Map1 does
             background = ImageIO.read(new File("res/Map/forest5k.png"));
