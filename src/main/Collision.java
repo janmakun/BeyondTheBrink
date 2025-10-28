@@ -34,7 +34,7 @@ public class Collision {
         walls.add(new Rectangle(190, -540, 160, 77));  // 9
         walls.add(new Rectangle(350, -560, 218, 77));  // 10
         walls.add(new Rectangle(538, -560, 30, 210));  // 11
-        walls.add(new Rectangle(538, -430, 288, 77));  // 12
+        walls.add(new Rectangle(538, -430, 292, 77));  // 12
         walls.add(new Rectangle(800, -590, 30, 210));  // 13
         walls.add(new Rectangle(800, -590, 130, 80));  // 14
         walls.add(new Rectangle(900, -765, 30, 210));  // 15
@@ -83,9 +83,9 @@ public class Collision {
         walls.add(new Rectangle(838, -2290, 32, 775)); // 55
         walls.add(new Rectangle(1071, -1815, 32, 585)); // 56
         walls.add(new Rectangle(-185, -1255, 1290, 32)); // 57
-        walls.add(new Rectangle(605, -1510, 265, 80)); // 58
+        walls.add(new Rectangle(607, -1510, 263, 80)); // 58
         walls.add(new Rectangle(-420, -1920, 665, 80)); // 59
-        walls.add(new Rectangle(-185, -1510, 525, 80)); // 60
+        walls.add(new Rectangle(-185, -1510, 530, 80)); // 60
         walls.add(new Rectangle(-185, -1255, 32, 265)); // 61
         walls.add(new Rectangle(-185, -985, 452, 80)); // 62
         walls.add(new Rectangle(235, -1135, 32, 150)); // 62.5
@@ -93,6 +93,42 @@ public class Collision {
         walls.add(new Rectangle(-185, -1720, 32, 210)); // 64
         walls.add(new Rectangle(-185, -1720, 425, 32)); // 65
         walls.add(new Rectangle(210, -1920, 32, 200)); // 66
+        walls.add(new Rectangle(300, -200, 300, 40));  // Upper Right
+        walls.add(new Rectangle(670, -4275, 1550, 80));  // A
+        walls.add(new Rectangle(2190, -4275, 30, 990));  // B
+        walls.add(new Rectangle(670, -3318, 1550, 40));  // C
+        walls.add(new Rectangle(670, -3570, 38, 280));  // D
+        walls.add(new Rectangle(670, -4197, 38, 400)); // E
+        walls.add(new Rectangle(-1243, -3795, 1949, 70));//F
+        walls.add(new Rectangle(-1835, -3570, 2542, 30)); //G
+        walls.add(new Rectangle(-1243, -3860, 600, 70));//H
+        walls.add(new Rectangle(-710, -4180 , 40, 330)); // I
+        walls.add(new Rectangle(-1440, -4180 , 750, 80)); // J
+        walls.add(new Rectangle(-1440, -4180 , 35, 380)); // K
+        walls.add(new Rectangle(-2000 , -3795 , 594, 80)); // L
+        walls.add(new Rectangle(-2000 , -3795 , 30, 3760)); // M
+        walls.add(new Rectangle(-1835 , -3570 , 30, 2530)); // O
+        walls.add(new Rectangle(-1835 , -1170 , 198, 170)); // N
+        walls.add(new Rectangle(-1835 , -880 , 198, 650)); // Q
+        walls.add(new Rectangle(-1835 , -300 , 790, 70)); // R
+        walls.add(new Rectangle(-1675 , -530 , 455, 70)); // T
+        walls.add(new Rectangle(-2035 , -80 , 1580, 30)); //S
+        walls.add(new Rectangle(-1650 , -2880 , 180, 1755)); // P
+        walls.add(new Rectangle(-1178 , -2940 , 132, 1077)); // w
+        walls.add(new Rectangle(-1502 , -2840 , 410, 45)); // V
+        walls.add(new Rectangle(-1340 , -1732 , 294, 1430)); // K11
+        walls.add(new Rectangle(-1340 , -2661 , 32, 1430)); // U
+        walls.add(new Rectangle(-1178 , -2940 , 1932, 80)); // G7
+        walls.add(new Rectangle(-842 , -2684 , 30, 2650)); //X
+        walls.add(new Rectangle(-842 , -2684 , 460, 320)); //Y
+        walls.add(new Rectangle(-219 , -2684 , 562, 320)); //H8, E5, F6
+        walls.add(new Rectangle(-682 , -2384 , 76, 430)); //Z
+        walls.add(new Rectangle(77 , -2384 , 76, 420)); //D4
+        walls.add(new Rectangle(-347 , -2149 , 123, 220)); //B2
+        walls.add(new Rectangle(-347 , -2056 , 440, 100)); // C3
+        walls.add(new Rectangle(-682 , -1956 , 376, 40)); //A1
+        walls.add(new Rectangle(240 , -2684 , 105, 1175)); //J10
+        walls.add(new Rectangle(607 , -2940 , 105, 1430)); //I9
     }
 
 
@@ -100,7 +136,7 @@ public class Collision {
         walls.clear();
     }
 
-    // Add a wall using x, y, width, height
+//     Add a wall using x, y, width, height
     public void addWall(int x, int y, int width, int height) {
         walls.add(new Rectangle(x, y, width, height));
         System.out.println("Wall added: x=" + x + ", y=" + y + ", w=" + width + ", h=" + height);

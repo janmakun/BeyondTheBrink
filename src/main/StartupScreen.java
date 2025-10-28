@@ -21,7 +21,6 @@ public class StartupScreen extends JPanel {
     private Rectangle quitButton;
 
     private JFrame parentFrame;
-    private GamePanel gamePanel;
 
     private boolean playHovered = false;
     private boolean quitHovered = false;
@@ -79,21 +78,21 @@ public class StartupScreen extends JPanel {
     }
 
     private void startGame() {
-        parentFrame.getContentPane().removeAll();
+        // Create ResourceLoader ONCE here
+        ResourceLoader loader = new ResourceLoader();
 
-        LoadingScreen loadingScreen = new LoadingScreen(parentFrame);
+        // Start loading resources in background immediately
+        new Thread(() -> {
+            System.out.println("Starting resource loading from StartupScreen...");
+            loader.loadAllResources();
+        }).start();
+
+        // Switch to loading screen and pass the same loader instance
+        parentFrame.getContentPane().removeAll();
+        LoadingScreen loadingScreen = new LoadingScreen(parentFrame, loader);
         parentFrame.add(loadingScreen);
         parentFrame.revalidate();
         parentFrame.repaint();
-
-        // Run resource loading in a background thread
-        new Thread(() -> {
-            ResourceLoader loader = new ResourceLoader();
-            loader.loadAllResources();  // heavy resource loading here
-
-            // When finished, transition to the game
-            SwingUtilities.invokeLater(() -> loadingScreen.transitionToGame());
-        }).start();
     }
 
     @Override
@@ -132,8 +131,6 @@ public class StartupScreen extends JPanel {
         }
         else if (btnImage == quitButtonImage) {
             g2.drawImage(btnImage, 87, 483, 250, 81, null);
-        }
-        else {
         }
 
         // Apply hover effect (semi-transparent white overlay)
