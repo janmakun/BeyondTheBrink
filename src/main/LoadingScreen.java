@@ -213,22 +213,46 @@ public class LoadingScreen extends JPanel {
     }
 
     private void drawInitialLoadingScreen(Graphics2D g2) {
-        // Simple pulsing "Loading..." text with dots animation
-        long time = System.currentTimeMillis();
-        int dotCount = (int) ((time / 500) % 4); // 0, 1, 2, 3 dots cycling
+        // Position at bottom left
+        int margin = 30;
+        int spinnerSize = 40;
+        int spinnerX = margin + spinnerSize / 2;
+        int spinnerY = HEIGHT - margin - spinnerSize / 2;
 
+        // Draw circular loading spinner
+        long time = System.currentTimeMillis();
+        float rotation = (time % 1000) / 1000.0f * 360.0f; // Full rotation per second
+
+        // Enable HIGH QUALITY rendering for smooth circles
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
+        g2.setStroke(new BasicStroke(4.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+        // Background circle (dim)
+        g2.setColor(new Color(80, 80, 80, 150));
+        g2.drawOval(spinnerX - spinnerSize / 2, spinnerY - spinnerSize / 2, spinnerSize, spinnerSize);
+
+        // Animated arc (bright) - use floating point for smoother rotation
+        g2.setColor(Color.WHITE);
+
+        // Create a smoother arc by using Graphics2D transform
+        Graphics2D g2d = (Graphics2D) g2.create();
+        g2d.translate(spinnerX, spinnerY);
+        g2d.rotate(Math.toRadians(rotation));
+        g2d.translate(-spinnerX, -spinnerY);
+
+        g2d.drawArc(spinnerX - spinnerSize / 2, spinnerY - spinnerSize / 2,
+                spinnerSize, spinnerSize, 0, 270);
+        g2d.dispose();
+
+        // "Loading..." text next to spinner
+        g2.setFont(new Font("Arial", Font.PLAIN, 18));
+        int dotCount = (int) ((time / 500) % 4);
         String dots = ".".repeat(dotCount);
         String loadingText = "Loading" + dots;
-
-        g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.BOLD, 36));
-        FontMetrics fm = g2.getFontMetrics();
-        int x = (WIDTH - fm.stringWidth("Loading...")) / 2; // Center based on max width
-        int y = HEIGHT / 2;
-        g2.drawString(loadingText, x, y);
-
-        // Optional: Add a subtle fade-in effect
-        float alpha = Math.min(1.0f, (System.currentTimeMillis() - startTime) / 500.0f);
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+        g2.drawString(loadingText, spinnerX + spinnerSize / 2 + 15, spinnerY + 7);
     }
 }

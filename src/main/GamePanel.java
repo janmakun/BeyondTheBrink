@@ -120,7 +120,7 @@ public class GamePanel extends JPanel implements Runnable {
             character.setPosition(nextX, nextY);
         } else {
             // Collision detected, stay at old position
-            moving = false;
+//            moving = false;
         }
 
         character.update(moving, direction);
