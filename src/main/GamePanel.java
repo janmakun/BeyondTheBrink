@@ -24,6 +24,11 @@ public class GamePanel extends JPanel implements Runnable {
 
     private ResourceLoader resourceLoader;
 
+    // Game State
+    private GameState gameState = GameState.PLAYING;
+    private PauseMenu pauseMenu;
+    private Point mousePosition = new Point(0, 0);
+
 
 
     public GamePanel(ResourceLoader resourceLoader) {
@@ -37,6 +42,9 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Initialize character at starting position
         character = new CharacterLoad(100, 100, resourceLoader);
+
+        // Initialize pause menu
+        pauseMenu = new PauseMenu(WIDTH, HEIGHT, resourceLoader);
 
         // Initialize map
         this.addKeyListener(keyHandler);
@@ -52,22 +60,64 @@ public class GamePanel extends JPanel implements Runnable {
         gameThread = new Thread(this);
         gameThread.start();
 
-        // Mouse listener to add walls by clicking
+        // Mouse listener for pause menu interactions
         pixelPosition = new PixelPosition() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
+                handleMouseClick(e.getX(), e.getY());
+            }
 
-                // Convert screen coordinates to world coordinates
-                int worldX = e.getX() + camera.getX();
-                int worldY = e.getY() + camera.getY();
-
-                // Add a 30x30 wall at clicked position
-//                collision.addWall(worldX, worldY, 30, 30);
-//                System.out.println("Wall added at World X=" + worldX + ", Y=" + worldY);
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                super.mouseMoved(e);
+                mousePosition.setLocation(e.getX(), e.getY());
             }
         };
         this.addMouseListener(pixelPosition);
+        this.addMouseMotionListener(pixelPosition);
+    }
+
+    private void handleMouseClick(int mouseX, int mouseY) {
+        if (gameState == GameState.PLAYING) {
+            // Check if pause icon was clicked
+            if (pauseMenu.isPauseIconClicked(mouseX, mouseY)) {
+                pauseGame();
+            }
+        } else if (gameState == GameState.PAUSED) {
+            // Check if continue button was clicked
+            if (pauseMenu.isContinueButtonClicked(mouseX, mouseY)) {
+                resumeGame();
+            }
+            // Check if exit button was clicked
+            else if (pauseMenu.isExitButtonClicked(mouseX, mouseY)) {
+                System.exit(0);
+            }
+        }
+    }
+
+    public void pauseGame() {
+        if (gameState == GameState.PLAYING && !pauseMenu.isFading()) {
+            gameState = GameState.PAUSED;
+            pauseMenu.startFadeIn();
+        }
+    }
+
+    public void resumeGame() {
+        if (gameState == GameState.PAUSED) {
+            pauseMenu.startFadeOut();
+            // Wait for fade out to complete before resuming
+            new Thread(() -> {
+                while (!pauseMenu.isFadedOut()) {
+                    try {
+                        Thread.sleep(16);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                gameState = GameState.PLAYING;
+            }).start();
+        }
     }
 
     @Override
@@ -84,6 +134,14 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
+        // Update pause menu fade animation
+        pauseMenu.update();
+
+        // Only update game logic if playing
+        if (gameState != GameState.PLAYING) {
+            return;
+        }
+
         int speed = 4;
         boolean moving = false;
         String direction = "";
@@ -175,6 +233,20 @@ public class GamePanel extends JPanel implements Runnable {
         // Restore graphics translation
         g2.translate(cameraX, cameraY);
 
-        // Draw UI elements in screen space here if needed
+        // Draw UI elements in screen space
+
+        // Draw pause icon (always visible in top-right corner)
+        if (gameState == GameState.PLAYING) {
+            pauseMenu.drawPauseIcon(g2);
+        }
+
+        // Draw pause menu overlay
+        if (gameState == GameState.PAUSED || pauseMenu.getFadeAlpha() > 0) {
+            pauseMenu.draw(g2);
+        }
+    }
+
+    public GameState getGameState() {
+        return gameState;
     }
 }

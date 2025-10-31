@@ -28,10 +28,10 @@ public class ResourceLoader {
      * Load all game resources with progress tracking
      */
     public void loadAllResources() {
-        System.out.println("🔄 Starting resource loading...");
+        System.out.println("📄 Starting resource loading...");
 
         // Calculate total resources to load
-        totalResources = 10 + 2; // 10 character sprites + 2 maps
+        totalResources = 10 + 2 + 5; // 10 character sprites + 2 maps + 5 pause menu images
 
         // Force garbage collection before loading
         System.gc();
@@ -47,6 +47,8 @@ public class ResourceLoader {
         System.gc();
 
         loadMapsOptimized();
+
+        loadPauseMenuAssets();
 
         System.out.println("✅ All resources loaded successfully!");
         finished = true;
@@ -141,6 +143,23 @@ public class ResourceLoader {
         }
 
         System.out.println("✓ Maps loaded!");
+    }
+
+    private void loadPauseMenuAssets() {
+        System.out.println("⏸️ Loading pause menu assets...");
+
+        images.put("pauseBackground", loadImageOptimized("res/Pause/GamePausedBgWithFont&PauseBtn.png", 500, 720));
+        loadedResources++;
+        images.put("continueButton", loadImageOptimized("res/Pause/continueButton.png", 400, 300));
+        loadedResources++;
+        images.put("exitButton", loadImageOptimized("res/Pause/ExitButton.png", 400, 300));
+        loadedResources++;
+        images.put("pauseIcon", loadImageOptimized("res/Pause/PauseButton.png", 60, 60));
+        loadedResources++;
+//        images.put("playIcon", loadImageOptimized("res/Pause/PausedButton.png", 170, 170));
+        loadedResources++;
+
+        System.out.println("✓ Pause menu assets loaded! (" + loadedResources + "/" + totalResources + ")");
     }
 
     /**
