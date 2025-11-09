@@ -12,7 +12,7 @@ public class Map1 {
 
     public Map1(ResourceLoader resourceLoader) {
         try {
-            background = ImageIO.read(new File("res/Map/5000kMap.png"));
+            background = ImageIO.read(new File("res/Map/DungeonWithPortalRock (2).png"));
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Map1 image not found!");

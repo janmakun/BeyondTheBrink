@@ -12,7 +12,7 @@ public class Map2 {
     public Map2(ResourceLoader resourceLoader) {
         try {
             // Fixed: Use File path like Map1 does
-            background = ImageIO.read(new File("res/Map/forest5k.png"));
+            background = ImageIO.read(new File("res/Map/forestWithPortalRock.png"));
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Map2 image not found!");
