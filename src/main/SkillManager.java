@@ -34,7 +34,7 @@ public class SkillManager {
         );
 
         // Skill R: Power Up - 3 frames, 12 frame delay, 360 frame cooldown (6 seconds)
-        skillR = new Skill(150, 150, 15, 12, 60);
+        skillR = new Skill(150, 150, 10, 12, 60);
         skillR.setFrames(
                 resourceLoader.getSpriteArray("skillR_up"),
                 resourceLoader.getSpriteArray("skillR_down"),

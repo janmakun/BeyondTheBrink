@@ -2,5 +2,6 @@ package main;
 
 public enum GameState {
     PLAYING,
-    PAUSED
+    PAUSED,
+    SWORD_SELECTION
 }

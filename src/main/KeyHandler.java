@@ -5,7 +5,9 @@ import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
     private boolean upPressed, downPressed, leftPressed, rightPressed, attackPressed;
-    private boolean qPressed, ePressed, rPressed; // Skill keys
+    private boolean qPressed, ePressed, rPressed;
+    private boolean fPressed; // Interaction key
+    private boolean onePressed; // Sword toggle key
     private GamePanel gp;
 
     public KeyHandler(GamePanel gp) {
@@ -16,47 +18,90 @@ public class KeyHandler implements KeyListener {
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
 
-        // Movement and attack keys only work when playing
         if (gp.getGameState() == GameState.PLAYING) {
+            // Movement is always allowed
             if (code == KeyEvent.VK_UP) upPressed = true;
             if (code == KeyEvent.VK_DOWN) downPressed = true;
             if (code == KeyEvent.VK_LEFT) leftPressed = true;
             if (code == KeyEvent.VK_RIGHT) rightPressed = true;
 
-            // Attack key (spacebar) - triggers attack in current direction
+            // Attack key - only works if sword is equipped AND visible
             if (code == KeyEvent.VK_SPACE && !gp.character.isAttacking()) {
-                attackPressed = true;
-                String direction = getCurrentDirection();
-                gp.character.startAttack(direction);
+                if (gp.hasSword() && gp.isSwordVisible()) {
+                    attackPressed = true;
+                    String direction = getCurrentDirection();
+                    gp.character.startAttack(direction);
+                } else if (!gp.hasSword()) {
+                    gp.showWarning("You need a sword to attack!");
+                } else if (!gp.isSwordVisible()) {
+                    gp.showWarning("Turn on your sword first! (Press 1)");
+                }
             }
 
-            // Skill Q - Sword Rotation
+            // Skill Q - only works if sword is equipped AND visible
             if (code == KeyEvent.VK_Q && !qPressed) {
-                qPressed = true;
-                String direction = gp.character.getLastDirection();
-                gp.getSkillManager().activateSkillQ(direction);
+                if (gp.hasSword() && gp.isSwordVisible()) {
+                    qPressed = true;
+                    String direction = gp.character.getLastDirection();
+                    gp.getSkillManager().activateSkillQ(direction);
+                } else if (!gp.hasSword()) {
+                    gp.showWarning("You need a sword to use skills!");
+                } else if (!gp.isSwordVisible()) {
+                    gp.showWarning("Turn on your sword first! (Press 1)");
+                }
             }
 
-            // Skill E - Second Skill
+            // Skill E - only works if sword is equipped AND visible
             if (code == KeyEvent.VK_E && !ePressed) {
-                ePressed = true;
-                String direction = gp.character.getLastDirection();
-                gp.getSkillManager().activateSkillE(direction);
+                if (gp.hasSword() && gp.isSwordVisible()) {
+                    ePressed = true;
+                    String direction = gp.character.getLastDirection();
+                    gp.getSkillManager().activateSkillE(direction);
+                } else if (!gp.hasSword()) {
+                    gp.showWarning("You need a sword to use skills!");
+                } else if (!gp.isSwordVisible()) {
+                    gp.showWarning("Turn on your sword first! (Press 1)");
+                }
             }
 
-            // Skill R - Power Up
+            // Skill R - only works if sword is equipped AND visible
             if (code == KeyEvent.VK_R && !rPressed) {
-                rPressed = true;
-                String direction = gp.character.getLastDirection();
-                gp.getSkillManager().activateSkillR(direction);
+                if (gp.hasSword() && gp.isSwordVisible()) {
+                    rPressed = true;
+                    String direction = gp.character.getLastDirection();
+                    gp.getSkillManager().activateSkillR(direction);
+                } else if (!gp.hasSword()) {
+                    gp.showWarning("You need a sword to use skills!");
+                } else if (!gp.isSwordVisible()) {
+                    gp.showWarning("Turn on your sword first! (Press 1)");
+                }
             }
 
+            // F key for interaction
+            if (code == KeyEvent.VK_F && !fPressed) {
+                fPressed = true;
+                System.out.println("F key pressed - attempting interaction...");
+                gp.handleInteraction();
+            }
+
+            // 1 key to toggle sword visibility
+            if (code == KeyEvent.VK_1 && !onePressed) {
+                onePressed = true;
+                gp.toggleSwordVisibility();
+            }
+
+            // M key to switch maps
             if (code == KeyEvent.VK_M) {
                 gp.switchMap();
             }
+
+            // C key to toggle coordinate display
+            if (code == KeyEvent.VK_C) {
+                gp.toggleCoordinateDisplay();
+            }
         }
 
-        // ESC key toggles pause
+        // ESC key works in any state
         if (code == KeyEvent.VK_ESCAPE) {
             if (gp.getGameState() == GameState.PLAYING) {
                 gp.pauseGame();
@@ -78,12 +123,13 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_Q) qPressed = false;
         if (code == KeyEvent.VK_E) ePressed = false;
         if (code == KeyEvent.VK_R) rPressed = false;
+        if (code == KeyEvent.VK_F) fPressed = false;
+        if (code == KeyEvent.VK_1) onePressed = false;
     }
 
     @Override
     public void keyTyped(KeyEvent e) {}
 
-    // Helper method to determine current direction based on pressed keys
     private String getCurrentDirection() {
         if (upPressed) return "up";
         if (downPressed) return "down";
@@ -100,4 +146,6 @@ public class KeyHandler implements KeyListener {
     public boolean isQPressed() { return qPressed; }
     public boolean isEPressed() { return ePressed; }
     public boolean isRPressed() { return rPressed; }
+    public boolean isFPressed() { return fPressed; }
+    public boolean isOnePressed() { return onePressed; }
 }

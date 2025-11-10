@@ -11,7 +11,6 @@ public class GamePanel extends JPanel implements Runnable {
     private final int HEIGHT = 720;
     private PixelPosition pixelPosition;
 
-    //try
     private Map1 map1;
     private Map2 map2;
     public int currentMap = 1;
@@ -20,18 +19,28 @@ public class GamePanel extends JPanel implements Runnable {
     private Thread gameThread;
     private Camera camera;
     private Collision collision;
-    public CharacterLoad character;  // Made public for KeyHandler access
+    public CharacterLoad character;
     private SkillManager skillManager;
-
     private ResourceLoader resourceLoader;
-
-    // Monster system
     private MonsterManager monsterManager;
 
-    // Game State
+    // NPC and Chest system
+    private NPC blueRogueNPC;
+    private Chest swordChest;
+    private SwordSelectionMenu swordSelectionMenu;
+    private SwordType currentSword = SwordType.NONE;
+    private boolean swordVisible = false;
+    private boolean hasInteractedWithNPC = false;
+
+    // Warning message system
+    private String warningMessage = "";
+    private int warningTimer = 0;
+    private static final int WARNING_DURATION = 120; // 2 seconds at 60 FPS
+
     private GameState gameState = GameState.PLAYING;
     private PauseMenu pauseMenu;
     private Point mousePosition = new Point(0, 0);
+    private boolean showCoordinates = true; // Debug helper
 
     public GamePanel(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
@@ -42,35 +51,49 @@ public class GamePanel extends JPanel implements Runnable {
         keyHandler = new KeyHandler(this);
         camera = new Camera(WIDTH, HEIGHT);
 
-        // Initialize character at starting position
         character = new CharacterLoad(100, 100, resourceLoader);
-
         skillManager = new SkillManager(character, resourceLoader);
-
-        // Initialize monster manager
         monsterManager = new MonsterManager(resourceLoader.getSpriteSize());
-
-        // Initialize pause menu
         pauseMenu = new PauseMenu(WIDTH, HEIGHT, resourceLoader);
 
-        // Initialize map
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
 
-        //try
         map1 = new Map1(resourceLoader);
         map2 = new Map2(resourceLoader);
 
-        // Initialize collision checker with rectangle walls
         collision = new Collision();
-
-        // Load monsters for starting map
         monsterManager.loadMap1Monsters();
+
+        // Initialize NPC and Chest with SAME coordinate system as monsters
+        blueRogueNPC = new NPC(820, -552, resourceLoader.getImage("npcBlueRogue"),
+                "Greetings, traveler! Open the chest ahead to claim your legendary sword. Choose wisely, for your choice will shape your destiny!");
+
+        // Place Chest
+        swordChest = new Chest(650, -122, resourceLoader.getSpriteArray("chest"));
+
+        System.out.println("=== INITIALIZATION ===");
+        System.out.println("Character starts at: (100, 100)");
+        System.out.println("NPC placed at: (820, -552)");
+        System.out.println("Chest placed at: (650, -122)");
+        System.out.println("Press 'C' to toggle coordinate display");
+        System.out.println("Press 'F' to interact when near NPC or Chest");
+
+        // Initialize sword selection menu
+        swordSelectionMenu = new SwordSelectionMenu(
+                WIDTH, HEIGHT,
+                resourceLoader.getImage("swordSelectionBg"),
+                resourceLoader.getImage("blueSwordIcon"),
+                resourceLoader.getImage("redSwordIcon"),
+                resourceLoader.getImage("blueButton"),
+                resourceLoader.getImage("redButton"),
+                529, 606, 272, 102,  // Blue button: x, y, width, height
+                191, 606, 272, 102   // Red button: x, y, width, height
+        );
 
         gameThread = new Thread(this);
         gameThread.start();
 
-        // Mouse listener for pause menu interactions
         pixelPosition = new PixelPosition() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -89,20 +112,92 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void handleMouseClick(int mouseX, int mouseY) {
-        if (gameState == GameState.PLAYING) {
-            // Check if pause icon was clicked
+        if (gameState == GameState.SWORD_SELECTION) {
+            if (swordSelectionMenu.isBlueButtonClicked(mouseX, mouseY)) {
+                selectSword(SwordType.BLUE_SWORD);
+            } else if (swordSelectionMenu.isRedButtonClicked(mouseX, mouseY)) {
+                selectSword(SwordType.RED_SWORD);
+            }
+        } else if (gameState == GameState.PLAYING) {
             if (pauseMenu.isPauseIconClicked(mouseX, mouseY)) {
                 pauseGame();
             }
         } else if (gameState == GameState.PAUSED) {
-            // Check if continue button was clicked
             if (pauseMenu.isContinueButtonClicked(mouseX, mouseY)) {
                 resumeGame();
-            }
-            // Check if exit button was clicked
-            else if (pauseMenu.isExitButtonClicked(mouseX, mouseY)) {
+            } else if (pauseMenu.isExitButtonClicked(mouseX, mouseY)) {
                 System.exit(0);
             }
+        }
+    }
+
+    public void handleInteraction() {
+        // Check NPC interaction first - ONLY shows dialogue
+        if (blueRogueNPC != null && blueRogueNPC.isPlayerNearby(character)) {
+            blueRogueNPC.interact();
+            hasInteractedWithNPC = true;
+            System.out.println("NPC dialogue displayed. Now go find the chest!");
+            return; // Don't open sword selection here
+        }
+
+        // Check chest interaction - THIS opens the sword selection menu
+        if (swordChest != null && !swordChest.isOpen() && swordChest.isPlayerNearby(character)) {
+            if (!hasInteractedWithNPC) {
+                // Must talk to NPC first
+                showWarning("Talk to the NPC first!");
+                System.out.println("You need to talk to the NPC before opening the chest!");
+            } else if (currentSword == SwordType.NONE) {
+                // Has talked to NPC, can now open chest and choose sword
+                System.out.println("Opening chest - sword selection menu!");
+                gameState = GameState.SWORD_SELECTION;
+                swordSelectionMenu.show();
+            } else {
+                // Already has a sword
+                showWarning("You already have a sword!");
+            }
+        }
+    }
+
+    private void selectSword(SwordType swordType) {
+        currentSword = swordType;
+        swordVisible = true;
+        character.setSwordVisibility(true); // Turn on sword immediately
+        swordSelectionMenu.hide();
+
+        // Open the chest visually
+        swordChest.open();
+
+        // Wait for fade out, then resume game
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            gameState = GameState.PLAYING;
+        }).start();
+
+        String swordName = (swordType == SwordType.BLUE_SWORD) ? "Frost Bane" : "Hellfire Edge";
+        System.out.println("Selected sword: " + swordName);
+        System.out.println("Sword is now equipped and visible!");
+        System.out.println("You can now attack and use skills!");
+        System.out.println("Press '1' to toggle sword on/off");
+    }
+
+    public void toggleSwordVisibility() {
+        if (currentSword != SwordType.NONE) {
+            swordVisible = !swordVisible;
+            character.setSwordVisibility(swordVisible);
+            String status = swordVisible ? "ON" : "OFF";
+            System.out.println("Sword is now " + status);
+
+            if (!swordVisible) {
+                System.out.println("You cannot attack or use skills while sword is OFF");
+            } else {
+                System.out.println("You can now attack and use skills!");
+            }
+        } else {
+            System.out.println("You must choose a sword first!");
         }
     }
 
@@ -113,12 +208,9 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-
-
     public void resumeGame() {
         if (gameState == GameState.PAUSED) {
             pauseMenu.startFadeOut();
-            // Wait for fade out to complete before resuming
             new Thread(() -> {
                 while (!pauseMenu.isFadedOut()) {
                     try {
@@ -146,10 +238,23 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
-        // Update pause menu fade animation
         pauseMenu.update();
+        swordSelectionMenu.update();
 
-        // Only update game logic if playing
+        if (blueRogueNPC != null) {
+            blueRogueNPC.update();
+        }
+        if (swordChest != null) {
+            swordChest.update();
+        }
+
+        if (warningTimer > 0) {
+            warningTimer--;
+            if (warningTimer <= 0) {
+                warningMessage = "";
+            }
+        }
+
         if (gameState != GameState.PLAYING) {
             return;
         }
@@ -158,7 +263,6 @@ public class GamePanel extends JPanel implements Runnable {
         boolean moving = false;
         String direction = "";
 
-        // Store current position
         int oldX = character.getX();
         int oldY = character.getY();
         int nextX = character.getX();
@@ -185,46 +289,27 @@ public class GamePanel extends JPanel implements Runnable {
             direction = "left";
         }
 
-        // Check collision and update position only if not attacking
         if (!character.isAttacking() &&
                 !collision.checkCollision(nextX + 50, nextY + 35, character.getWidth() - 100, character.getHeight() - 65)) {
             character.setPosition(nextX, nextY);
-        }
-        // If character is attacking, allow movement through monsters but not walls
-        else if (character.isAttacking() &&
+        } else if (character.isAttacking() &&
                 !collision.checkCollision(nextX + 50, nextY + 35, character.getWidth() - 100, character.getHeight() - 65)) {
             character.setPosition(nextX, nextY);
-        }
-        else if (skillManager.getSkillQ().isActive() || skillManager.getSkillE().isActive() || skillManager.getSkillR().isActive()) {}
-        else {
-            // Collision detected with wall, stay at old position
-            // moving = false;  // Optional: uncomment if you want to stop animation on collision
         }
 
         character.update(moving, direction);
         camera.followCharacter(character);
-
-        // Update monsters
         monsterManager.update(character, collision);
-
         skillManager.update();
 
-
-        // Check if player is attacking and overlapping with any monster
         if (character.isAttacking()) {
             checkPlayerAttackOnMonsters();
         }
 
-        // Check if any monster is attacking player (you can add health system here)
         if (monsterManager.isAnyMonsterAttackingPlayer(character)) {
-            // System.out.println("Player is being attacked!");
-            // TODO: Implement player damage/health system
         }
     }
 
-    /**
-     * Check if player's attack hits any monsters
-     */
     private void checkPlayerAttackOnMonsters() {
         int playerHitX = character.getX() + 50;
         int playerHitY = character.getY() + 35;
@@ -237,33 +322,27 @@ public class GamePanel extends JPanel implements Runnable {
             int monsterHitW = monster.getWidth() - 100;
             int monsterHitH = monster.getHeight() - 65;
 
-            // Check if hitboxes overlap
             if (playerHitX < monsterHitX + monsterHitW &&
                     playerHitX + playerHitW > monsterHitX &&
                     playerHitY < monsterHitY + monsterHitH &&
                     playerHitY + playerHitH > monsterHitY) {
-
-                // Player is attacking and overlapping monster!
                 System.out.println("Hit monster at: (" + monster.getX() + ", " + monster.getY() + ")");
-                // TODO: Implement monster damage/death system
-                // monsterManager.damageMonster(monster, damageAmount);
             }
         }
     }
 
-    // Try
     public void switchMap() {
         if (currentMap == 1) {
             currentMap = 2;
-            character.setPosition(-780, -800); // new starting point for map2
-            collision.loadMap2Collisions(); // custom method for map2
-            monsterManager.loadMap2Monsters(); // Load map 2 monsters
+            character.setPosition(-780, -800);
+            collision.loadMap2Collisions();
+            monsterManager.loadMap2Monsters();
             System.out.println("Switched to Map 2");
         } else {
             currentMap = 1;
             character.setPosition(100, 200);
             collision.loadMap1Collisions();
-            monsterManager.loadMap1Monsters(); // Load map 1 monsters
+            monsterManager.loadMap1Monsters();
             System.out.println("Switched to Map 1");
         }
     }
@@ -275,56 +354,121 @@ public class GamePanel extends JPanel implements Runnable {
         int cameraX = camera.getX();
         int cameraY = camera.getY();
 
-        // Translate graphics to camera position (world coordinates)
         g2.translate(-cameraX, -cameraY);
 
-        // Draw map at world coordinates
-        //Try
         if (currentMap == 1) {
             map1.draw(g, 5000, 5000, 0, 0);
         } else if (currentMap == 2) {
             map2.draw(g, 4000, 4000, 0, 0);
         }
 
-        // Draw collision walls
         collision.drawWalls(g2);
 
-        // Draw monsters at world coordinates
+        // Draw NPC (same drawing style as monsters - no camera offset)
+        if (blueRogueNPC != null) {
+            blueRogueNPC.draw(g, 0, 0);
+        }
+
+        // Draw chest (same drawing style as monsters - no camera offset)
+        if (swordChest != null) {
+            swordChest.draw(g, 0, 0);
+        }
+
+        // Draw "F to interact" prompt
+        if (blueRogueNPC != null && blueRogueNPC.isPlayerNearby(character) && !blueRogueNPC.isShowingDialogue()) {
+            drawInteractPrompt(g2, blueRogueNPC.getX(), blueRogueNPC.getY(), 0, 0);
+        }
+        if (swordChest != null && !swordChest.isOpen() && swordChest.isPlayerNearby(character)) {
+            drawInteractPrompt(g2, swordChest.getX(), swordChest.getY(), 0, 0);
+        }
+
         monsterManager.draw(g, cameraX, cameraY);
 
-        // Draw character at world coordinates
         if (!skillManager.getSkillQ().isActive() && !skillManager.getSkillE().isActive() && !skillManager.getSkillR().isActive()) {
             character.draw(g, 0, 0);
         }
 
         skillManager.draw(g, 0, 0);
-
-
-
-        // Draw character hitbox
         collision.drawCharacterHitbox(g2, character.getX(), character.getY(),
                 character.getWidth(), character.getHeight());
 
-
-
-        // Restore graphics translation
         g2.translate(cameraX, cameraY);
 
-        // Draw UI elements in screen space
-
-        // Draw pause icon (always visible in top-right corner)
         if (gameState == GameState.PLAYING) {
             pauseMenu.drawPauseIcon(g2);
+            drawSkillCooldowns(g2);
+            drawSwordIndicator(g2);
+            drawWarningMessage(g2);
+
+            // Debug: Show coordinates
+            if (showCoordinates) {
+                drawCoordinateInfo(g2);
+            }
         }
 
-        // Draw pause menu overlay
         if (gameState == GameState.PAUSED || pauseMenu.getFadeAlpha() > 0) {
             pauseMenu.draw(g2);
         }
 
-        if (gameState == GameState.PLAYING) {
-            drawSkillCooldowns(g2);
+        if (gameState == GameState.SWORD_SELECTION || swordSelectionMenu.isFading()) {
+            swordSelectionMenu.draw(g2);
         }
+    }
+
+    private void drawInteractPrompt(Graphics2D g2, int x, int y, int cameraX, int cameraY) {
+        g2.setColor(new Color(255, 255, 255, 200));
+        g2.setFont(new Font("Arial", Font.BOLD, 16));
+        String text = "Press F";
+        FontMetrics fm = g2.getFontMetrics();
+        int textWidth = fm.stringWidth(text);
+        g2.drawString(text, x - cameraX + 50 - textWidth / 2, y - cameraY - 10);
+    }
+
+    private void drawSwordIndicator(Graphics2D g2) {
+        if (currentSword == SwordType.NONE) return;
+
+        int x = WIDTH - 120;
+        int y = 20;
+
+        g2.setColor(new Color(0, 0, 0, 150));
+        g2.fillRoundRect(x, y, 100, 30, 10, 10);
+
+        Color swordColor = (currentSword == SwordType.BLUE_SWORD) ?
+                new Color(50, 150, 255) : new Color(255, 50, 50);
+        g2.setColor(swordColor);
+        g2.setStroke(new BasicStroke(2));
+        g2.drawRoundRect(x, y, 100, 30, 10, 10);
+
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font("Arial", Font.BOLD, 12));
+        String text = swordVisible ? "Sword: ON" : "Sword: OFF";
+        g2.drawString(text, x + 10, y + 20);
+    }
+
+    private void drawWarningMessage(Graphics2D g2) {
+        if (warningTimer <= 0 || warningMessage.isEmpty()) return;
+
+        float alpha = Math.min(1.0f, warningTimer / 30.0f);
+
+        g2.setFont(new Font("Arial", Font.BOLD, 20));
+        FontMetrics fm = g2.getFontMetrics();
+        int textWidth = fm.stringWidth(warningMessage);
+        int x = (WIDTH - textWidth) / 2;
+        int y = HEIGHT / 2 - 100;
+
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha * 0.8f));
+        g2.setColor(new Color(0, 0, 0));
+        g2.fillRoundRect(x - 20, y - 30, textWidth + 40, 50, 15, 15);
+
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+        g2.setColor(new Color(255, 200, 0));
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(x - 20, y - 30, textWidth + 40, 50, 15, 15);
+
+        g2.setColor(new Color(255, 200, 0));
+        g2.drawString(warningMessage, x, y);
+
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
     }
 
     private void drawSkillCooldowns(Graphics2D g2) {
@@ -332,17 +476,14 @@ public class GamePanel extends JPanel implements Runnable {
         int padding = 10;
         int startY = HEIGHT - iconSize - padding;
 
-        // Skill Q cooldown
         drawCooldownIcon(g2, padding, startY, iconSize, "Q",
                 skillManager.getSkillQ().isOnCooldown(),
                 skillManager.getSkillQ().getCooldownPercent());
 
-        // Skill E cooldown
         drawCooldownIcon(g2, padding + iconSize + padding, startY, iconSize, "E",
                 skillManager.getSkillE().isOnCooldown(),
                 skillManager.getSkillE().getCooldownPercent());
 
-        // Skill R cooldown
         drawCooldownIcon(g2, padding + (iconSize + padding) * 2, startY, iconSize, "R",
                 skillManager.getSkillR().isOnCooldown(),
                 skillManager.getSkillR().getCooldownPercent());
@@ -350,7 +491,6 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void drawCooldownIcon(Graphics2D g2, int x, int y, int size, String key,
                                   boolean onCooldown, float cooldownPercent) {
-        // Draw background
         if (onCooldown) {
             g2.setColor(new Color(100, 100, 100, 180));
         } else {
@@ -358,14 +498,12 @@ public class GamePanel extends JPanel implements Runnable {
         }
         g2.fillRoundRect(x, y, size, size, 10, 10);
 
-        // Draw cooldown overlay
         if (onCooldown) {
             g2.setColor(new Color(0, 0, 0, 150));
             int cooldownHeight = (int)(size * cooldownPercent);
             g2.fillRoundRect(x, y + size - cooldownHeight, size, cooldownHeight, 10, 10);
         }
 
-        // Draw key letter
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Arial", Font.BOLD, 20));
         FontMetrics fm = g2.getFontMetrics();
@@ -373,7 +511,6 @@ public class GamePanel extends JPanel implements Runnable {
         int textY = y + ((size - fm.getHeight()) / 2) + fm.getAscent();
         g2.drawString(key, textX, textY);
 
-        // Draw border
         g2.setColor(Color.WHITE);
         g2.setStroke(new java.awt.BasicStroke(2));
         g2.drawRoundRect(x, y, size, size, 10, 10);
@@ -383,11 +520,64 @@ public class GamePanel extends JPanel implements Runnable {
         return gameState;
     }
 
+    public boolean hasSword() {
+        return currentSword != SwordType.NONE;
+    }
+
+    public boolean isSwordVisible() {
+        return swordVisible;
+    }
+
+    public void showWarning(String message) {
+        warningMessage = message;
+        warningTimer = WARNING_DURATION;
+    }
+
     public MonsterManager getMonsterManager() {
         return monsterManager;
     }
 
     public SkillManager getSkillManager() {
         return skillManager;
+    }
+
+    public void toggleCoordinateDisplay() {
+        showCoordinates = !showCoordinates;
+        System.out.println("Coordinate display: " + (showCoordinates ? "ON" : "OFF"));
+    }
+
+    private void drawCoordinateInfo(Graphics2D g2) {
+        g2.setFont(new Font("Monospaced", Font.BOLD, 14));
+        g2.setColor(new Color(0, 0, 0, 180));
+        g2.fillRect(10, 60, 320, 160);
+
+        g2.setColor(Color.YELLOW);
+        int yPos = 80;
+        g2.drawString("Player X: " + character.getX(), 20, yPos);
+        yPos += 20;
+        g2.drawString("Player Y: " + character.getY(), 20, yPos);
+        yPos += 20;
+        g2.drawString("Camera X: " + camera.getX(), 20, yPos);
+        yPos += 20;
+        g2.drawString("Camera Y: " + camera.getY(), 20, yPos);
+        yPos += 20;
+
+        if (blueRogueNPC != null) {
+            g2.drawString("NPC at: (" + blueRogueNPC.getX() + ", " + blueRogueNPC.getY() + ")", 20, yPos);
+            yPos += 20;
+            int distance = (int)Math.sqrt(
+                    Math.pow(character.getX() - blueRogueNPC.getX(), 2) +
+                            Math.pow(character.getY() - blueRogueNPC.getY(), 2)
+            );
+            g2.drawString("Dist to NPC: " + distance, 20, yPos);
+            yPos += 20;
+        }
+        if (swordChest != null) {
+            g2.drawString("Chest at: (" + swordChest.getX() + ", " + swordChest.getY() + ")", 20, yPos);
+            yPos += 20;
+        }
+
+        g2.setColor(Color.WHITE);
+        g2.drawString("Press 'C' to toggle", 20, yPos);
     }
 }

@@ -136,7 +136,7 @@ public class Collision {
         walls.clear();
     }
 
-    //     Add a wall using x, y, width, height
+//         Add a wall using x, y, width, height
     public void addWall(int x, int y, int width, int height) {
         walls.add(new Rectangle(x, y, width, height));
         System.out.println("Wall added: x=" + x + ", y=" + y + ", w=" + width + ", h=" + height);

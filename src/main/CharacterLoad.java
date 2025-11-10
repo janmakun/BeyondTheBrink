@@ -16,6 +16,12 @@ public class CharacterLoad {
     private BufferedImage[] downSprites;
     private BufferedImage upStaySprites, downStaySprites, leftStaySprites, rightStaySprites;
 
+    // Blue sword walking sprites
+    private BufferedImage[] blueSwordWalkDown;
+    private BufferedImage[] blueSwordWalkUp;
+    private BufferedImage[] blueSwordWalkLeft;
+    private BufferedImage[] blueSwordWalkRight;
+
     private BufferedImage[] attackUpSprites;
     private BufferedImage[] attackDownSprites;
     private BufferedImage[] attackLeftSprites;
@@ -29,6 +35,7 @@ public class CharacterLoad {
     private int attackWidth;
     private int attackHeight;
     private int drawSkill;
+    private int swordWalk;
 
     private String currentDirection = "";
     private boolean isAttacking = false;
@@ -36,6 +43,8 @@ public class CharacterLoad {
     private int attackFrameIndex = 0;
     private int attackFrameCount = 0;
     private String lastDirection = "down";
+
+    private boolean showingSword = false; // For sword visibility toggle
 
     public CharacterLoad(int startX, int startY, ResourceLoader resourceLoader) {
         this.x = startX;
@@ -47,7 +56,9 @@ public class CharacterLoad {
         this.attackWidth = resourceLoader.getAttackSpriteSize();
         this.attackHeight = resourceLoader.getAttackSpriteSize();
         this.drawSkill = resourceLoader.getSkillSpriteSize();
+        this.swordWalk = resourceLoader.getSwordWalkSize();
 
+        // Normal walking sprites
         downSprites = resourceLoader.getSpriteArray("down");
         rightSprites = resourceLoader.getSpriteArray("right");
         upSprites = resourceLoader.getSpriteArray("up");
@@ -58,6 +69,13 @@ public class CharacterLoad {
         leftStaySprites = resourceLoader.getImage("leftStay");
         rightStaySprites = resourceLoader.getImage("rightStay");
 
+        // Blue sword walking sprites
+        blueSwordWalkDown = resourceLoader.getSpriteArray("blueSwordWalk_down");
+        blueSwordWalkUp = resourceLoader.getSpriteArray("blueSwordWalk_up");
+        blueSwordWalkLeft = resourceLoader.getSpriteArray("blueSwordWalk_left");
+        blueSwordWalkRight = resourceLoader.getSpriteArray("blueSwordWalk_right");
+
+        // Attack sprites
         attackUpSprites = resourceLoader.getSpriteArray("attackUp");
         attackDownSprites = resourceLoader.getSpriteArray("attackDown");
         attackLeftSprites = resourceLoader.getSpriteArray("attackLeft");
@@ -66,6 +84,7 @@ public class CharacterLoad {
         System.out.println("Character initialized!");
         System.out.println("  Walking sprite size: " + width + "x" + height);
         System.out.println("  Attack sprite size: " + attackWidth + "x" + attackHeight);
+        System.out.println("  Blue sword walking sprites loaded: " + (blueSwordWalkDown != null));
     }
 
     public void setSize(int newWidth, int newHeight) {
@@ -76,6 +95,14 @@ public class CharacterLoad {
     public void setAttackSize(int newWidth, int newHeight) {
         this.attackWidth = newWidth;
         this.attackHeight = newHeight;
+    }
+
+    public void setSwordVisibility(boolean visible) {
+        this.showingSword = visible;
+    }
+
+    public boolean isSwordVisible() {
+        return showingSword;
     }
 
     public void startAttack(String direction) {
@@ -104,28 +131,46 @@ public class CharacterLoad {
 
         if (moving) {
             currentDirection = direction;
-            lastDirection = direction; // Track last direction
+            lastDirection = direction;
             frameCount++;
             if (frameCount >= frameDelay) {
-                switch (direction) {
-                    case "down":
-                        frameIndex = (frameIndex + 1) % downSprites.length;
-                        break;
-                    case "up":
-                        frameIndex = (frameIndex + 1) % upSprites.length;
-                        break;
-                    case "right":
-                        frameIndex = (frameIndex + 1) % rightSprites.length;
-                        break;
-                    case "left":
-                        frameIndex = (frameIndex + 1) % leftSprites.length;
-                        break;
+                // Choose the appropriate sprite array based on sword visibility
+                BufferedImage[] currentSprites = getCurrentWalkingSprites(direction);
+
+                if (currentSprites != null) {
+                    frameIndex = (frameIndex + 1) % currentSprites.length;
                 }
                 frameCount = 0;
             }
         } else {
             frameIndex = 0;
         }
+    }
+    public int pubDrawWidth;
+    public int pubDrawHeight;
+    private BufferedImage[] getCurrentWalkingSprites(String direction) {
+        if (showingSword) {
+            pubDrawWidth = swordWalk;
+            pubDrawHeight = swordWalk;
+            // Use sword walking sprites
+            switch (direction) {
+                case "down": return blueSwordWalkDown;
+                case "up": return blueSwordWalkUp;
+                case "right": return blueSwordWalkRight;
+                case "left": return blueSwordWalkLeft;
+            }
+        } else {
+            pubDrawWidth = width;
+            pubDrawHeight = height;
+            // Use normal walking sprites
+            switch (direction) {
+                case "down": return downSprites;
+                case "up": return upSprites;
+                case "right": return rightSprites;
+                case "left": return leftSprites;
+            }
+        }
+        return downSprites; // fallback
     }
 
     public void draw(Graphics g, int cameraX, int cameraY) {
@@ -163,35 +208,45 @@ public class CharacterLoad {
                     break;
             }
         } else {
-            switch (currentDirection) {
-                case "down":
-                    currentFrame = downSprites[frameIndex];
-                    break;
-                case "up":
-                    currentFrame = upSprites[frameIndex];
-                    break;
-                case "right":
-                    currentFrame = rightSprites[frameIndex];
-                    break;
-                case "left":
-                    currentFrame = leftSprites[frameIndex];
-                    break;
-                default:
-                    if (currentDirection.equals("up")) {
+            // Get current walking sprites based on sword visibility
+            BufferedImage[] currentSprites = getCurrentWalkingSprites(currentDirection.isEmpty() ? lastDirection : currentDirection);
+            drawWidth = pubDrawWidth;
+            drawHeight = pubDrawHeight;
+            if (!currentDirection.isEmpty() && currentSprites != null) {
+                // Moving - use animated frames
+                currentFrame = currentSprites[frameIndex];
+            } else {
+                // Standing still - use appropriate stay sprite
+                // When showing sword and standing, use first frame of sword walk animation
+                if (showingSword && currentSprites != null && currentSprites.length > 0) {
+                    currentFrame = currentSprites[0];
+                } else {
+                    // Use normal stay sprites
+                    if (lastDirection.equals("up")) {
                         currentFrame = upStaySprites;
-                    } else if (currentDirection.equals("left")) {
+                    } else if (lastDirection.equals("left")) {
                         currentFrame = leftStaySprites;
-                    } else if (currentDirection.equals("right")) {
+                    } else if (lastDirection.equals("right")) {
                         currentFrame = rightStaySprites;
                     } else {
                         currentFrame = downStaySprites;
                     }
-                    break;
+                }
             }
         }
 
         if (currentFrame != null) {
-            g.drawImage(currentFrame, x - cameraX, y - cameraY, drawWidth, drawHeight, null);
+            if(isAttacking) {
+                g.drawImage(currentFrame, x - cameraX, y - cameraY, drawWidth, drawHeight, null);
+            }
+            else{
+                if(showingSword) {
+                    g.drawImage(currentFrame, x - cameraX + 25, y - cameraY + 40, drawWidth, drawHeight, null);
+                }
+                else {
+                    g.drawImage(currentFrame, x - cameraX, y - cameraY, drawWidth, drawHeight, null);
+                }
+            }
         }
     }
 
@@ -218,4 +273,3 @@ public class CharacterLoad {
         return lastDirection.isEmpty() ? "down" : lastDirection;
     }
 }
-

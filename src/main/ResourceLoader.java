@@ -8,58 +8,42 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * ResourceLoader - Preloads game resources with memory optimization and progress tracking
- */
 public class ResourceLoader {
-
     private Map<String, BufferedImage> images;
     private Map<String, BufferedImage[]> spriteArrays;
     private volatile boolean finished = false;
     private volatile int totalResources = 0;
     private volatile int loadedResources = 0;
 
-    // Configurable sprite size - CHANGE THIS TO RESIZE ALL SPRITES!
-    private int spriteSize = 150;  // Default 64x64, change to 32 or 128, etc.
-    private int attackSpriteSize = 150;  // Separate size for attack animations
+    private int spriteSize = 150;
+    private int attackSpriteSize = 150;
     private int skillOneSize = 75;
+    private int swordWalkSize = 75;
 
     public ResourceLoader() {
         images = new HashMap<>();
         spriteArrays = new HashMap<>();
     }
 
-    /**
-     * Set the size for character sprites BEFORE calling loadAllResources()
-     */
     public void setSpriteSize(int size) {
         this.spriteSize = size;
     }
 
-    /**
-     * Set the size for attack sprites BEFORE calling loadAllResources()
-     */
     public void setAttackSpriteSize(int size) {
         this.attackSpriteSize = size;
     }
 
-    /**
-     * Load all game resources with progress tracking
-     */
     public void loadAllResources() {
         System.out.println("📄 Starting resource loading...");
         System.out.println("   Sprite size: " + spriteSize + "x" + spriteSize);
         System.out.println("   Attack sprite size: " + attackSpriteSize + "x" + attackSpriteSize);
 
-        // Calculate total resources to load
-        totalResources = 10 + 2 + 5 + 16;
+        // Calculate total resources (added NPC, chest, sword selection assets)
+        totalResources = 10 + 2 + 5 + 16 + 10; // Added 10 for new features
 
-        // Force garbage collection before loading
         System.gc();
 
         loadCharacterSprites();
-
-        // Small delay and GC between major loads
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
@@ -68,12 +52,10 @@ public class ResourceLoader {
         System.gc();
 
         loadAttackSprites();
-
         loadSkillSprites();
-
         loadMapsOptimized();
-
         loadPauseMenuAssets();
+        loadNPCAndChestAssets(); // New method
 
         System.out.println("✅ All resources loaded successfully!");
         finished = true;
@@ -83,9 +65,6 @@ public class ResourceLoader {
         return finished;
     }
 
-    /**
-     * Get loading progress as a percentage (0.0 to 1.0)
-     */
     public float getLoadingProgress() {
         if (totalResources == 0) return 0f;
         return (float) loadedResources / totalResources;
@@ -94,7 +73,6 @@ public class ResourceLoader {
     private void loadCharacterSprites() {
         System.out.println("👤 Loading character sprites...");
 
-        // Down/Front sprites
         BufferedImage[] downSprites = new BufferedImage[2];
         downSprites[0] = loadImageOptimized("res/Player/frontwalk2.png", spriteSize, spriteSize);
         loadedResources++;
@@ -102,7 +80,6 @@ public class ResourceLoader {
         loadedResources++;
         spriteArrays.put("down", downSprites);
 
-        // Right sprites
         BufferedImage[] rightSprites = new BufferedImage[2];
         rightSprites[0] = loadImageOptimized("res/Player/RightWalk2.png", spriteSize, spriteSize);
         loadedResources++;
@@ -110,7 +87,6 @@ public class ResourceLoader {
         loadedResources++;
         spriteArrays.put("left", rightSprites);
 
-        // Up/Back sprites
         BufferedImage[] upSprites = new BufferedImage[2];
         upSprites[0] = loadImageOptimized("res/Player/Back2.png", spriteSize, spriteSize);
         loadedResources++;
@@ -118,7 +94,6 @@ public class ResourceLoader {
         loadedResources++;
         spriteArrays.put("up", upSprites);
 
-        // Left sprites
         BufferedImage[] leftSprites = new BufferedImage[2];
         leftSprites[0] = loadImageOptimized("res/Player/LeftWalk2.png", spriteSize, spriteSize);
         loadedResources++;
@@ -126,7 +101,6 @@ public class ResourceLoader {
         loadedResources++;
         spriteArrays.put("right", leftSprites);
 
-        // Standing sprites
         images.put("upStay", loadImageOptimized("res/Player/frontwalk1.png", spriteSize, spriteSize));
         loadedResources++;
         images.put("downStay", loadImageOptimized("res/Player/Back1.png", spriteSize, spriteSize));
@@ -142,7 +116,6 @@ public class ResourceLoader {
     private void loadAttackSprites() {
         System.out.println("⚔️ Loading attack sprites...");
 
-        // Attack Down/Front sprites (4 frames)
         BufferedImage[] attackDownSprites = new BufferedImage[4];
         attackDownSprites[0] = loadImageOptimized("res/BlueSword/BLUEFrontattack1.png", attackSpriteSize, attackSpriteSize);
         loadedResources++;
@@ -154,7 +127,6 @@ public class ResourceLoader {
         loadedResources++;
         spriteArrays.put("attackDown", attackDownSprites);
 
-        // Attack Right sprites (4 frames)
         BufferedImage[] attackRightSprites = new BufferedImage[4];
         attackRightSprites[0] = loadImageOptimized("res/BlueSword/BlueRightAttack1.png", attackSpriteSize, attackSpriteSize);
         loadedResources++;
@@ -166,7 +138,6 @@ public class ResourceLoader {
         loadedResources++;
         spriteArrays.put("attackRight", attackRightSprites);
 
-        // Attack Up/Back sprites (4 frames)
         BufferedImage[] attackUpSprites = new BufferedImage[4];
         attackUpSprites[0] = loadImageOptimized("res/BlueSword/BLUEBackAttack1.png", attackSpriteSize, attackSpriteSize);
         loadedResources++;
@@ -178,7 +149,6 @@ public class ResourceLoader {
         loadedResources++;
         spriteArrays.put("attackUp", attackUpSprites);
 
-        // Attack Left sprites (4 frames)
         BufferedImage[] attackLeftSprites = new BufferedImage[4];
         attackLeftSprites[0] = loadImageOptimized("res/BlueSword/BLUELeftAttack1.png", attackSpriteSize, attackSpriteSize);
         loadedResources++;
@@ -190,8 +160,34 @@ public class ResourceLoader {
         loadedResources++;
         spriteArrays.put("attackLeft", attackLeftSprites);
 
+        // Blue sword walking sprites (3 frames per direction)
+        BufferedImage[] blueSwordDown = new BufferedImage[3];
+        blueSwordDown[0] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (57).png", swordWalkSize, swordWalkSize);
+        blueSwordDown[1] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (66).png", swordWalkSize, swordWalkSize);
+        blueSwordDown[2] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (68).png", swordWalkSize, swordWalkSize);
+        spriteArrays.put("blueSwordWalk_down", blueSwordDown);
+
+        BufferedImage[] blueSwordUp = new BufferedImage[3];
+        blueSwordUp[0] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (64).png", swordWalkSize, swordWalkSize);
+        blueSwordUp[1] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (65).png", swordWalkSize, swordWalkSize);
+        blueSwordUp[2] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (67).png", swordWalkSize, swordWalkSize);
+        spriteArrays.put("blueSwordWalk_up", blueSwordUp);
+
+        BufferedImage[] blueSwordLeft = new BufferedImage[3];
+        blueSwordLeft[0] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (63).png", swordWalkSize, swordWalkSize);
+        blueSwordLeft[1] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (62).png", swordWalkSize, swordWalkSize);
+        blueSwordLeft[2] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (61).png", swordWalkSize, swordWalkSize);
+        spriteArrays.put("blueSwordWalk_right", blueSwordLeft);
+
+        BufferedImage[] blueSwordRight = new BufferedImage[3];
+        blueSwordRight[0] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (58).png", swordWalkSize, swordWalkSize);
+        blueSwordRight[1] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (59).png", swordWalkSize, swordWalkSize);
+        blueSwordRight[2] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (60).png", swordWalkSize, swordWalkSize);
+        spriteArrays.put("blueSwordWalk_left", blueSwordRight);
+
         System.out.println("✓ Attack sprites loaded! (" + loadedResources + "/" + totalResources + ")");
     }
+
     private void loadSkillSprites() {
         System.out.println("✨ Loading skill sprites...");
 
@@ -373,34 +369,23 @@ public class ResourceLoader {
     }
 
     private void loadMapsOptimized() {
-        System.out.println("🗺️ Loading maps (this may take a moment)...");
-
+        System.out.println("🗺️ Loading maps...");
         try {
             ImageIO.setUseCache(false);
-
-            System.out.println("  📍 Loading Map 1...");
             images.put("map1", loadLargeImageOptimized("res/Map/DungeonWithPortalRock (2).png"));
             loadedResources++;
-            System.out.println("  ✓ Map 1 loaded! (" + loadedResources + "/" + totalResources + ")");
-
             System.gc();
             Thread.sleep(100);
-
-            System.out.println("  📍 Loading Map 2...");
             images.put("map2", loadLargeImageOptimized("res/Map/forestWithPortalRock.png"));
             loadedResources++;
-            System.out.println("  ✓ Map 2 loaded! (" + loadedResources + "/" + totalResources + ")");
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         System.out.println("✓ Maps loaded!");
     }
 
     private void loadPauseMenuAssets() {
         System.out.println("⏸️ Loading pause menu assets...");
-
         images.put("pauseBackground", loadImageOptimized("res/Pause/GamePausedBgWithFont&PauseBtn4.png", 500, 720));
         loadedResources++;
         images.put("continueButton", loadImageOptimized("res/Pause/continueButton.png", 400, 300));
@@ -409,14 +394,69 @@ public class ResourceLoader {
         loadedResources++;
         images.put("pauseIcon", loadImageOptimized("res/Pause/PauseButton.png", 60, 60));
         loadedResources++;
-        loadedResources++;
-
-        System.out.println("✓ Pause menu assets loaded! (" + loadedResources + "/" + totalResources + ")");
+        System.out.println("✓ Pause menu assets loaded!");
     }
 
-    /**
-     * Load and optimize small images (sprites)
-     */
+    private void loadNPCAndChestAssets() {
+        System.out.println("🎮 Loading NPC and chest assets...");
+
+        // Load NPC sprite (blue rogue) - use your actual sprite
+        images.put("npcBlueRogue",  loadImageOptimized("res/NPC/FinalBossDungeon-export.png", 150, 150));
+        loadedResources++;
+
+        // Load chest frames
+        BufferedImage[] chestFrames = new BufferedImage[3];
+        chestFrames[0] = loadImageOptimized("res/Chest/Chest32k1.png", 100, 100);
+        chestFrames[1] = loadImageOptimized("res/Chest/Chest32k2.png", 100, 100);
+        chestFrames[2] = loadImageOptimized("res/Chest/Copy of open chest-export.png", 100, 100);
+        spriteArrays.put("chest", chestFrames);
+        loadedResources += 3;
+
+        // Load sword selection assets - REPLACE THESE WITH YOUR ACTUAL IMAGES
+        // Background: 850x700
+        images.put("swordSelectionBg", loadImageOptimized("res/ChoosingSword/chooseBGwithdetailsFnal.png", 850, 700));
+        loadedResources++;
+
+        // Sword icons (optional - can be null if already on background)
+        images.put("blueSwordIcon", null); // Set to null if icons are on background
+        loadedResources++;
+        images.put("redSwordIcon", null); // Set to null if icons are on background
+        loadedResources++;
+
+        // Buttons: 272x102 each (can be null if buttons are on background)
+        images.put("blueButton", loadImageOptimized("res/ChoosingSword/ChooseButtonBlue.png", 272, 102)); // Set to null if button is on background
+        loadedResources++;
+        images.put("redButton", loadImageOptimized("res/ChoosingSword/chooseButtonRed.png", 272, 102)); // Set to null if button is on background
+        loadedResources++;
+
+        System.out.println("✓ NPC and chest assets loaded!");
+    }
+
+    private BufferedImage createPlaceholderImage(int width, int height, Color color) {
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = img.createGraphics();
+        g2.setColor(color);
+        g2.fillRect(0, 0, width, height);
+        g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke(2));
+        g2.drawRect(0, 0, width - 1, height - 1);
+        g2.dispose();
+        return img;
+    }
+
+    private BufferedImage createPlaceholderChest(int width, int height, boolean open) {
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = img.createGraphics();
+        g2.setColor(new Color(139, 69, 19)); // Brown
+        g2.fillRect(10, 30, width - 20, height - 30);
+        if (open) {
+            g2.setColor(new Color(255, 215, 0)); // Gold
+            g2.fillOval(width / 2 - 15, height / 2 - 15, 30, 30);
+        }
+        g2.dispose();
+        return img;
+    }
+
     private BufferedImage loadImageOptimized(String path, int targetWidth, int targetHeight) {
         try {
             BufferedImage raw = ImageIO.read(new File(path));
@@ -446,9 +486,6 @@ public class ResourceLoader {
         }
     }
 
-    /**
-     * Load and optimize large images (maps)
-     */
     private BufferedImage loadLargeImageOptimized(String path) {
         try {
             File file = new File(path);
@@ -486,19 +523,13 @@ public class ResourceLoader {
 
             System.out.println("      Scaled size: " + scaled.getWidth() + "x" + scaled.getHeight());
             return scaled;
-
         } catch (IOException e) {
             System.err.println("      ✗ Failed to load: " + path);
             e.printStackTrace();
             return null;
-        } catch (OutOfMemoryError e) {
-            System.err.println("      ✗ OUT OF MEMORY loading: " + path);
-            System.err.println("      Try increasing Java heap size with: -Xmx2048m or -Xmx4096m");
-            throw e;
         }
     }
 
-    // Getters for preloaded resources
     public BufferedImage getImage(String key) {
         return images.get(key);
     }
@@ -525,5 +556,8 @@ public class ResourceLoader {
 
     public int getSkillSpriteSize() {
         return skillOneSize;
+    }
+    public int getSwordWalkSize(){
+        return swordWalkSize;
     }
 }
