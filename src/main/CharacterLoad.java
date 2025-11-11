@@ -255,29 +255,35 @@ public class CharacterLoad {
             currentFrame = (currentAttackSprites != null && currentAttackSprites.length >= 4)
                     ? currentAttackSprites[attackFrameIndex] : null;
         } else {
-            // Get current walking sprites based on sword visibility
-            BufferedImage[] currentSprites = getCurrentWalkingSprites(currentDirection.isEmpty() ? lastDirection : currentDirection);
-            drawWidth = pubDrawWidth;
-            drawHeight = pubDrawHeight;
-            if (!currentDirection.isEmpty() && currentSprites != null) {
+            // Not attacking - walking or standing
+            String directionToUse = currentDirection.isEmpty() ? lastDirection : currentDirection;
+
+            if (!currentDirection.isEmpty()) {
                 // Moving - use animated frames
-                currentFrame = currentSprites[frameIndex];
+                BufferedImage[] currentSprites = getCurrentWalkingSprites(directionToUse);
+                drawWidth = pubDrawWidth;
+                drawHeight = pubDrawHeight;
+
+                if (currentSprites != null && frameIndex < currentSprites.length) {
+                    currentFrame = currentSprites[frameIndex];
+                }
             } else {
-                // Standing still - use appropriate stay sprite
-                // When showing sword and standing, use first frame of sword walk animation
-                if (showingSword && currentSprites != null && currentSprites.length > 0) {
-                    currentFrame = currentSprites[0];
+                // Standing still
+                if (showingSword) {
+                    // When showing sword and standing, use first frame of sword walk animation
+                    BufferedImage[] currentSprites = getCurrentWalkingSprites(directionToUse);
+                    drawWidth = pubDrawWidth;
+                    drawHeight = pubDrawHeight;
+
+                    if (currentSprites != null && currentSprites.length > 0) {
+                        currentFrame = currentSprites[0];
+                    } else {
+                        // Fallback to normal stay sprite
+                        currentFrame = getStaySprite(directionToUse);
+                    }
                 } else {
                     // Use normal stay sprites
-                    if (lastDirection.equals("up")) {
-                        currentFrame = upStaySprites;
-                    } else if (lastDirection.equals("left")) {
-                        currentFrame = leftStaySprites;
-                    } else if (lastDirection.equals("right")) {
-                        currentFrame = rightStaySprites;
-                    } else {
-                        currentFrame = downStaySprites;
-                    }
+                    currentFrame = getStaySprite(directionToUse);
                 }
             }
         }
@@ -288,21 +294,21 @@ public class CharacterLoad {
             }
             else{
                 if(showingSword) {
-                    if(currentDirection.equals("down")) {
+                    if(currentDirection.equals("down") || (currentDirection.isEmpty() && lastDirection.equals("down"))) {
                         g.drawImage(currentFrame, x - cameraX + 25, y - cameraY + 45, drawWidth, drawHeight, null);
                     }
-                    else if(currentDirection.equals("up")) {
+                    else if(currentDirection.equals("up") || (currentDirection.isEmpty() && lastDirection.equals("up"))) {
                         if(currentSwordType == SwordType.RED_SWORD) {
-                            g.drawImage(currentFrame, x - cameraX + 36, y - cameraY + 43, drawWidth, drawHeight, null); //karakal pelitan hays
+                            g.drawImage(currentFrame, x - cameraX + 36, y - cameraY + 43, drawWidth, drawHeight, null);
                         }
                         else {
                             g.drawImage(currentFrame, x - cameraX + 28, y - cameraY + 35, drawWidth, drawHeight, null);
                         }
                     }
-                    else if(currentDirection.equals("left")) {
+                    else if(currentDirection.equals("left") || (currentDirection.isEmpty() && lastDirection.equals("left"))) {
                         g.drawImage(currentFrame, x - cameraX + 32, y - cameraY + 42, drawWidth, drawHeight, null);
                     }
-                    else if(currentDirection.equals("right")) {
+                    else if(currentDirection.equals("right") || (currentDirection.isEmpty() && lastDirection.equals("right"))) {
                         g.drawImage(currentFrame, x - cameraX + 40, y - cameraY + 43, drawWidth, drawHeight, null);
                     }
                 }
@@ -334,5 +340,15 @@ public class CharacterLoad {
     public String setPosition() { return ""; }
     public String getLastDirection() {
         return lastDirection.isEmpty() ? "down" : lastDirection;
+    }
+
+    private BufferedImage getStaySprite(String direction) {
+        switch (direction) {
+            case "up": return upStaySprites;
+            case "left": return leftStaySprites;
+            case "right": return rightStaySprites;
+            case "down":
+            default: return downStaySprites;
+        }
     }
 }
