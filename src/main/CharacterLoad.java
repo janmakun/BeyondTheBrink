@@ -22,10 +22,23 @@ public class CharacterLoad {
     private BufferedImage[] blueSwordWalkLeft;
     private BufferedImage[] blueSwordWalkRight;
 
+    private BufferedImage[] redSwordWalkDown;
+    private BufferedImage[] redSwordWalkUp;
+    private BufferedImage[] redSwordWalkLeft;
+    private BufferedImage[] redSwordWalkRight;
+
+    private SwordType currentSwordType = SwordType.NONE;
+
     private BufferedImage[] attackUpSprites;
     private BufferedImage[] attackDownSprites;
     private BufferedImage[] attackLeftSprites;
     private BufferedImage[] attackRightSprites;
+
+    private BufferedImage[] redAttackUpSprites;
+    private BufferedImage[] redAttackDownSprites;
+    private BufferedImage[] redAttackLeftSprites;
+    private BufferedImage[] redAttackRightSprites;
+
 
     private int x;
     private int y;
@@ -75,16 +88,31 @@ public class CharacterLoad {
         blueSwordWalkLeft = resourceLoader.getSpriteArray("blueSwordWalk_left");
         blueSwordWalkRight = resourceLoader.getSpriteArray("blueSwordWalk_right");
 
+        redSwordWalkDown = resourceLoader.getSpriteArray("redSwordWalk_down");
+        redSwordWalkUp = resourceLoader.getSpriteArray("redSwordWalk_up");
+        redSwordWalkLeft = resourceLoader.getSpriteArray("redSwordWalk_left");
+        redSwordWalkRight = resourceLoader.getSpriteArray("redSwordWalk_right");
+
         // Attack sprites
         attackUpSprites = resourceLoader.getSpriteArray("attackUp");
         attackDownSprites = resourceLoader.getSpriteArray("attackDown");
         attackLeftSprites = resourceLoader.getSpriteArray("attackLeft");
         attackRightSprites = resourceLoader.getSpriteArray("attackRight");
 
+        redAttackUpSprites = resourceLoader.getSpriteArray("redAttackUp");
+        redAttackDownSprites = resourceLoader.getSpriteArray("redAttackDown");
+        redAttackLeftSprites = resourceLoader.getSpriteArray("redAttackLeft");
+        redAttackRightSprites = resourceLoader.getSpriteArray("redAttackRight");
+
         System.out.println("Character initialized!");
         System.out.println("  Walking sprite size: " + width + "x" + height);
         System.out.println("  Attack sprite size: " + attackWidth + "x" + attackHeight);
         System.out.println("  Blue sword walking sprites loaded: " + (blueSwordWalkDown != null));
+    }
+
+    public void setSwordType(SwordType swordType) {
+        this.currentSwordType = swordType;
+        System.out.println("Character sword type set to: " + swordType);
     }
 
     public void setSize(int newWidth, int newHeight) {
@@ -152,12 +180,22 @@ public class CharacterLoad {
         if (showingSword) {
             pubDrawWidth = swordWalk;
             pubDrawHeight = swordWalk;
-            // Use sword walking sprites
-            switch (direction) {
-                case "down": return blueSwordWalkDown;
-                case "up": return blueSwordWalkUp;
-                case "right": return blueSwordWalkRight;
-                case "left": return blueSwordWalkLeft;
+
+            // Choose sprite set based on current sword type
+            if (currentSwordType == SwordType.BLUE_SWORD) {
+                switch (direction) {
+                    case "down": return blueSwordWalkDown;
+                    case "up": return blueSwordWalkUp;
+                    case "right": return blueSwordWalkRight;
+                    case "left": return blueSwordWalkLeft;
+                }
+            } else if (currentSwordType == SwordType.RED_SWORD) {
+                switch (direction) {
+                    case "down": return redSwordWalkDown;
+                    case "up": return redSwordWalkUp;
+                    case "right": return redSwordWalkRight;
+                    case "left": return redSwordWalkLeft;
+                }
             }
         } else {
             pubDrawWidth = width;
@@ -182,31 +220,40 @@ public class CharacterLoad {
             drawWidth = attackWidth;
             drawHeight = attackHeight;
 
-            switch (attackDirection) {
-                case "up":
-                    currentFrame = (attackUpSprites != null && attackUpSprites.length >= 4) ? attackUpSprites[attackFrameIndex] : null;
-                    break;
-                case "down":
-                    currentFrame = (attackDownSprites != null && attackDownSprites.length >= 4) ? attackDownSprites[attackFrameIndex] : null;
-                    break;
-                case "left":
-                    currentFrame = (attackLeftSprites != null && attackLeftSprites.length >= 4) ? attackLeftSprites[attackFrameIndex] : null;
-                    break;
-                case "right":
-                    currentFrame = (attackRightSprites != null && attackRightSprites.length >= 4) ? attackRightSprites[attackFrameIndex] : null;
-                    break;
-                default:
-                    if(currentDirection.equals("up")) {
-                        currentFrame = (attackUpSprites != null && attackUpSprites.length >= 4) ? attackUpSprites[attackFrameIndex] : null;
-                    } else if (currentDirection.equals("down")) {
-                        currentFrame = (attackDownSprites != null && attackDownSprites.length >= 4) ? attackDownSprites[attackFrameIndex] : null;
-                    } else if (currentDirection.equals("left")) {
-                        currentFrame = (attackLeftSprites != null && attackLeftSprites.length >= 4) ? attackLeftSprites[attackFrameIndex] : null;
-                    } else if(currentDirection.equals("right")) {
-                        currentFrame = (attackRightSprites != null && attackRightSprites.length >= 4) ? attackRightSprites[attackFrameIndex] : null;
-                    }
-                    break;
+            BufferedImage[] currentAttackSprites = null;
+
+            // Choose attack sprites based on sword type
+            if (currentSwordType == SwordType.RED_SWORD) {
+                switch (attackDirection) {
+                    case "up": currentAttackSprites = redAttackUpSprites; break;
+                    case "down": currentAttackSprites = redAttackDownSprites; break;
+                    case "left": currentAttackSprites = redAttackLeftSprites; break;
+                    case "right": currentAttackSprites = redAttackRightSprites; break;
+                    default:
+                        if(currentDirection.equals("up")) currentAttackSprites = redAttackUpSprites;
+                        else if (currentDirection.equals("down")) currentAttackSprites = redAttackDownSprites;
+                        else if (currentDirection.equals("left")) currentAttackSprites = redAttackLeftSprites;
+                        else if(currentDirection.equals("right")) currentAttackSprites = redAttackRightSprites;
+                        break;
+                }
+            } else {
+                // Blue sword or default
+                switch (attackDirection) {
+                    case "up": currentAttackSprites = attackUpSprites; break;
+                    case "down": currentAttackSprites = attackDownSprites; break;
+                    case "left": currentAttackSprites = attackLeftSprites; break;
+                    case "right": currentAttackSprites = attackRightSprites; break;
+                    default:
+                        if(currentDirection.equals("up")) currentAttackSprites = attackUpSprites;
+                        else if (currentDirection.equals("down")) currentAttackSprites = attackDownSprites;
+                        else if (currentDirection.equals("left")) currentAttackSprites = attackLeftSprites;
+                        else if(currentDirection.equals("right")) currentAttackSprites = attackRightSprites;
+                        break;
+                }
             }
+
+            currentFrame = (currentAttackSprites != null && currentAttackSprites.length >= 4)
+                    ? currentAttackSprites[attackFrameIndex] : null;
         } else {
             // Get current walking sprites based on sword visibility
             BufferedImage[] currentSprites = getCurrentWalkingSprites(currentDirection.isEmpty() ? lastDirection : currentDirection);
@@ -241,7 +288,23 @@ public class CharacterLoad {
             }
             else{
                 if(showingSword) {
-                    g.drawImage(currentFrame, x - cameraX + 25, y - cameraY + 40, drawWidth, drawHeight, null);
+                    if(currentDirection.equals("down")) {
+                        g.drawImage(currentFrame, x - cameraX + 25, y - cameraY + 45, drawWidth, drawHeight, null);
+                    }
+                    else if(currentDirection.equals("up")) {
+                        if(currentSwordType == SwordType.RED_SWORD) {
+                            g.drawImage(currentFrame, x - cameraX + 36, y - cameraY + 43, drawWidth, drawHeight, null); //karakal pelitan hays
+                        }
+                        else {
+                            g.drawImage(currentFrame, x - cameraX + 28, y - cameraY + 35, drawWidth, drawHeight, null);
+                        }
+                    }
+                    else if(currentDirection.equals("left")) {
+                        g.drawImage(currentFrame, x - cameraX + 32, y - cameraY + 42, drawWidth, drawHeight, null);
+                    }
+                    else if(currentDirection.equals("right")) {
+                        g.drawImage(currentFrame, x - cameraX + 40, y - cameraY + 43, drawWidth, drawHeight, null);
+                    }
                 }
                 else {
                     g.drawImage(currentFrame, x - cameraX, y - cameraY, drawWidth, drawHeight, null);

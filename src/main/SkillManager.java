@@ -12,8 +12,13 @@ public class SkillManager {
 
     private CharacterLoad character;
 
+    private SwordType currentSwordType = SwordType.NONE;
+    private ResourceLoader resourceLoader;
+
+
     public SkillManager(CharacterLoad character, ResourceLoader resourceLoader) {
         this.character = character;
+        this.resourceLoader = resourceLoader;
 
         // Skill Q: Sword Rotation - 4 frames, 8 frame delay, 180 frame cooldown (3 seconds at 60fps)
         skillQ = new Skill(150, 150, 8, 6, 180);
@@ -41,6 +46,58 @@ public class SkillManager {
                 resourceLoader.getSpriteArray("skillR_left"),
                 resourceLoader.getSpriteArray("skillR_right")
         );
+    }
+
+    public void setSwordType(SwordType swordType) {
+        this.currentSwordType = swordType;
+
+        // Update all skills with appropriate sprites
+        if (swordType == SwordType.RED_SWORD) {
+            skillQ.setFrames(
+                    resourceLoader.getSpriteArray("redSkillQ_up"),
+                    resourceLoader.getSpriteArray("redSkillQ_down"),
+                    resourceLoader.getSpriteArray("redSkillQ_left"),
+                    resourceLoader.getSpriteArray("redSkillQ_right")
+            );
+
+            skillE.setFrames(
+                    resourceLoader.getSpriteArray("redSkillE_up"),
+                    resourceLoader.getSpriteArray("redSkillE_down"),
+                    resourceLoader.getSpriteArray("redSkillE_left"),
+                    resourceLoader.getSpriteArray("redSkillE_right")
+            );
+
+            skillR.setFrames(
+                    resourceLoader.getSpriteArray("redSkillR_up"),
+                    resourceLoader.getSpriteArray("redSkillR_down"),
+                    resourceLoader.getSpriteArray("redSkillR_left"),
+                    resourceLoader.getSpriteArray("redSkillR_right")
+            );
+        } else if (swordType == SwordType.BLUE_SWORD) {
+            // Keep blue sword skills (already loaded in constructor)
+            skillQ.setFrames(
+                    resourceLoader.getSpriteArray("skillQ_up"),
+                    resourceLoader.getSpriteArray("skillQ_down"),
+                    resourceLoader.getSpriteArray("skillQ_left"),
+                    resourceLoader.getSpriteArray("skillQ_right")
+            );
+
+            skillE.setFrames(
+                    resourceLoader.getSpriteArray("skillE_up"),
+                    resourceLoader.getSpriteArray("skillE_down"),
+                    resourceLoader.getSpriteArray("skillE_left"),
+                    resourceLoader.getSpriteArray("skillE_right")
+            );
+
+            skillR.setFrames(
+                    resourceLoader.getSpriteArray("skillR_up"),
+                    resourceLoader.getSpriteArray("skillR_down"),
+                    resourceLoader.getSpriteArray("skillR_left"),
+                    resourceLoader.getSpriteArray("skillR_right")
+            );
+        }
+
+        System.out.println("Skills updated for sword type: " + swordType);
     }
 
     public void activateSkillQ(String direction) {

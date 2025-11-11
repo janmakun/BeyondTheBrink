@@ -43,15 +43,15 @@ public class SwordSelectionMenu {
 
         // Button positions are relative to background position
         blueButtonBounds = new Rectangle(
-                bgX + blueX,
-                bgY + blueY,
+                529,
+                617,
                 blueW,
                 blueH
         );
 
         redButtonBounds = new Rectangle(
-                bgX + redX,
-                bgY + redY,
+                180,
+                606,
                 redW,
                 redH
         );
@@ -109,14 +109,14 @@ public class SwordSelectionMenu {
 
         // Draw buttons at exact positions (if custom images not provided, draw rectangles)
         if (redButtonImage != null) {
-            g2.drawImage(redButtonImage, redButtonBounds.x - 70, redButtonBounds.y - 5,
+            g2.drawImage(redButtonImage, redButtonBounds.x, redButtonBounds.y,
                     redButtonBounds.width, redButtonBounds.height, null);
         } else {
             drawButton(g2, redButtonBounds, "HELLFIRE EDGE", new Color(255, 50, 50));
         }
 
         if (blueButtonImage != null) {
-            g2.drawImage(blueButtonImage, blueButtonBounds.x - 60, blueButtonBounds.y,
+            g2.drawImage(blueButtonImage, blueButtonBounds.x, blueButtonBounds.y,
                     blueButtonBounds.width, blueButtonBounds.height, null);
         } else {
             drawButton(g2, blueButtonBounds, "FROST BANE", new Color(0, 150, 255));
@@ -144,11 +144,11 @@ public class SwordSelectionMenu {
     }
 
     public boolean isBlueButtonClicked(int mouseX, int mouseY) {
-        return isActive && fadeAlpha >= 1f && blueButtonBounds.contains(mouseX - 60, mouseY);
+        return isActive && fadeAlpha >= 1f && blueButtonBounds.contains(mouseX, mouseY);
     }
 
     public boolean isRedButtonClicked(int mouseX, int mouseY) {
-        return isActive && fadeAlpha >= 1f && redButtonBounds.contains(mouseX - 70, mouseY - 5);
+        return isActive && fadeAlpha >= 1f && redButtonBounds.contains(mouseX, mouseY);
     }
 
     public boolean isActive() {

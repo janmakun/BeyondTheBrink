@@ -161,13 +161,15 @@ public class GamePanel extends JPanel implements Runnable {
     private void selectSword(SwordType swordType) {
         currentSword = swordType;
         swordVisible = true;
-        character.setSwordVisibility(true); // Turn on sword immediately
-        swordSelectionMenu.hide();
 
-        // Open the chest visually
+        // Tell character and skillManager which sword type was selected
+        character.setSwordType(swordType);
+        character.setSwordVisibility(true);
+        skillManager.setSwordType(swordType); // ADD THIS LINE
+
+        swordSelectionMenu.hide();
         swordChest.open();
 
-        // Wait for fade out, then resume game
         new Thread(() -> {
             try {
                 Thread.sleep(500);
@@ -179,8 +181,8 @@ public class GamePanel extends JPanel implements Runnable {
 
         String swordName = (swordType == SwordType.BLUE_SWORD) ? "Frost Bane" : "Hellfire Edge";
         System.out.println("Selected sword: " + swordName);
-        System.out.println("Sword is now equipped and visible!");
-        System.out.println("You can now attack and use skills!");
+        System.out.println("Sword type: " + swordType);
+        System.out.println("Skills and attacks updated for " + swordName);
         System.out.println("Press '1' to toggle sword on/off");
     }
 

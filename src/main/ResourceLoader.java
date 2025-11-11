@@ -160,30 +160,105 @@ public class ResourceLoader {
         loadedResources++;
         spriteArrays.put("attackLeft", attackLeftSprites);
 
+        //Red Sword
+
+        BufferedImage[] redAttackDown = new BufferedImage[4];
+        redAttackDown[0] = loadImageOptimized("res/RedSwordAttack/redFA1.png", attackSpriteSize, attackSpriteSize);
+        loadedResources++;
+        redAttackDown[1] = loadImageOptimized("res/RedSwordAttack/redFA2-export.png", attackSpriteSize, attackSpriteSize);
+        loadedResources++;
+        redAttackDown[2] = loadImageOptimized("res/RedSwordAttack/redFA3-export.png", attackSpriteSize, attackSpriteSize);
+        loadedResources++;
+        redAttackDown[3] = loadImageOptimized("res/RedSwordAttack/redFA4.png", attackSpriteSize, attackSpriteSize);
+        loadedResources++;
+        spriteArrays.put("redAttackDown", redAttackDown);
+
+        BufferedImage[] redAttackRight = new BufferedImage[4];
+        redAttackRight[0] = loadImageOptimized("res/RedSwordAttack/REDRightAttack1.png", attackSpriteSize, attackSpriteSize);
+        loadedResources++;
+        redAttackRight[1] = loadImageOptimized("res/RedSwordAttack/REDRightAttack2.png", attackSpriteSize, attackSpriteSize);
+        loadedResources++;
+        redAttackRight[2] = loadImageOptimized("res/RedSwordAttack/REDRightAttack3.png", attackSpriteSize, attackSpriteSize);
+        loadedResources++;
+        redAttackRight[3] = loadImageOptimized("res/RedSwordAttack/REDRightAttack4.png", attackSpriteSize, attackSpriteSize);
+        loadedResources++;
+        spriteArrays.put("redAttackRight", redAttackRight);
+
+        BufferedImage[] redAttackUp = new BufferedImage[4];
+        redAttackUp[0] = loadImageOptimized("res/RedSwordAttack/RedBA5.png", attackSpriteSize, attackSpriteSize);
+        loadedResources++;
+        redAttackUp[1] = loadImageOptimized("res/RedSwordAttack/RedBA3.png", attackSpriteSize, attackSpriteSize);
+        loadedResources++;
+        redAttackUp[2] = loadImageOptimized("res/RedSwordAttack/RedBA.png", attackSpriteSize, attackSpriteSize);
+        loadedResources++;
+        redAttackUp[3] = loadImageOptimized("res/RedSwordAttack/RedBA1.png", attackSpriteSize, attackSpriteSize);
+        loadedResources++;
+        spriteArrays.put("redAttackUp", redAttackUp);
+
+        BufferedImage[] redAttackLeft = new BufferedImage[4];
+        redAttackLeft[0] = loadImageOptimized("res/RedSwordAttack/REDLeftAttack1.png", attackSpriteSize, attackSpriteSize);
+        loadedResources++;
+        redAttackLeft[1] = loadImageOptimized("res/RedSwordAttack/REDLeftAttack2.png", attackSpriteSize, attackSpriteSize);
+        loadedResources++;
+        redAttackLeft[2] = loadImageOptimized("res/RedSwordAttack/REDLeftAttack3.png", attackSpriteSize, attackSpriteSize);
+        loadedResources++;
+        redAttackLeft[3] = loadImageOptimized("res/RedSwordAttack/REDLeftAttack4.png", attackSpriteSize, attackSpriteSize);
+        loadedResources++;
+        spriteArrays.put("redAttackLeft", redAttackLeft);
+
+        System.out.println("✓ Red sword attack sprites loaded!");
+
         // Blue sword walking sprites (3 frames per direction)
         BufferedImage[] blueSwordDown = new BufferedImage[3];
-        blueSwordDown[0] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (57).png", swordWalkSize, swordWalkSize);
-        blueSwordDown[1] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (66).png", swordWalkSize, swordWalkSize);
-        blueSwordDown[2] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (68).png", swordWalkSize, swordWalkSize);
+        blueSwordDown[0] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (89).png", swordWalkSize, swordWalkSize);
+        blueSwordDown[1] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (88).png", swordWalkSize, swordWalkSize);
+        blueSwordDown[2] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (91).png", swordWalkSize, swordWalkSize);
         spriteArrays.put("blueSwordWalk_down", blueSwordDown);
 
         BufferedImage[] blueSwordUp = new BufferedImage[3];
-        blueSwordUp[0] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (64).png", swordWalkSize, swordWalkSize);
-        blueSwordUp[1] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (65).png", swordWalkSize, swordWalkSize);
-        blueSwordUp[2] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (67).png", swordWalkSize, swordWalkSize);
+        blueSwordUp[0] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 - 2025-11-11T145801.533.png", swordWalkSize, swordWalkSize);
+        blueSwordUp[1] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 - 2025-11-11T145038.497.png", swordWalkSize, swordWalkSize);
+        blueSwordUp[2] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 - 2025-11-11T145247.632.png", swordWalkSize, swordWalkSize); //
         spriteArrays.put("blueSwordWalk_up", blueSwordUp);
 
         BufferedImage[] blueSwordLeft = new BufferedImage[3];
-        blueSwordLeft[0] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (63).png", swordWalkSize, swordWalkSize);
-        blueSwordLeft[1] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (62).png", swordWalkSize, swordWalkSize);
-        blueSwordLeft[2] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (61).png", swordWalkSize, swordWalkSize);
-        spriteArrays.put("blueSwordWalk_right", blueSwordLeft);
+        blueSwordLeft[0] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (86).png", swordWalkSize, swordWalkSize);
+        blueSwordLeft[1] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (87).png", swordWalkSize, swordWalkSize);
+        blueSwordLeft[2] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 - 2025-11-10T203656.235.png", swordWalkSize, swordWalkSize);
+        spriteArrays.put("blueSwordWalk_left", blueSwordLeft);
 
         BufferedImage[] blueSwordRight = new BufferedImage[3];
-        blueSwordRight[0] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (58).png", swordWalkSize, swordWalkSize);
-        blueSwordRight[1] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (59).png", swordWalkSize, swordWalkSize);
-        blueSwordRight[2] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 (60).png", swordWalkSize, swordWalkSize);
-        spriteArrays.put("blueSwordWalk_left", blueSwordRight);
+        blueSwordRight[0] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 - 2025-11-11T151734.925.png", swordWalkSize, swordWalkSize);
+        blueSwordRight[1] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 - 2025-11-11T150729.663.png", swordWalkSize, swordWalkSize);
+        blueSwordRight[2] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 - 2025-11-11T151145.739.png", swordWalkSize, swordWalkSize);
+        spriteArrays.put("blueSwordWalk_right", blueSwordRight);
+
+        //Red Sword
+        BufferedImage[] redSwordDown = new BufferedImage[3];
+        redSwordDown[0] = loadImageOptimized("res/RedSwordWalking/RedSwordDown1.png", swordWalkSize, swordWalkSize);
+        redSwordDown[1] = loadImageOptimized("res/RedSwordWalking/RedSwordDown2.png", swordWalkSize, swordWalkSize);
+        redSwordDown[2] = loadImageOptimized("res/RedSwordWalking/RedSwordDown3.png", swordWalkSize, swordWalkSize);
+        spriteArrays.put("redSwordWalk_down", redSwordDown);
+
+        BufferedImage[] redSwordUp = new BufferedImage[3];
+        redSwordUp[0] = loadImageOptimized("res/RedSwordWalking/RedSwordUp1.png", swordWalkSize, swordWalkSize);
+        redSwordUp[1] = loadImageOptimized("res/RedSwordWalking/RedSwordUp2.png", swordWalkSize, swordWalkSize);
+        redSwordUp[2] = loadImageOptimized("res/RedSwordWalking/RedSwordUp3.png", swordWalkSize, swordWalkSize);
+        spriteArrays.put("redSwordWalk_up", redSwordUp);
+
+        BufferedImage[] redSwordLeft = new BufferedImage[3];
+        redSwordLeft[0] = loadImageOptimized("res/RedSwordWalking/RedSwordLeft1.png", swordWalkSize, swordWalkSize);
+        redSwordLeft[1] = loadImageOptimized("res/RedSwordWalking/RedSwordLeft2.png", swordWalkSize, swordWalkSize);
+        redSwordLeft[2] = loadImageOptimized("res/RedSwordWalking/RedSwordLeft3.png", swordWalkSize, swordWalkSize);
+        spriteArrays.put("redSwordWalk_left", redSwordLeft);
+
+        BufferedImage[] redSwordRight = new BufferedImage[3];
+        redSwordRight[0] = loadImageOptimized("res/RedSwordWalking/RedSwordRight1.png", swordWalkSize, swordWalkSize);
+        redSwordRight[1] = loadImageOptimized("res/RedSwordWalking/RedSwordRight2.png", swordWalkSize, swordWalkSize);
+        redSwordRight[2] = loadImageOptimized("res/RedSwordWalking/RedSwordRight3.png", swordWalkSize, swordWalkSize);
+        spriteArrays.put("redSwordWalk_right", redSwordRight);
+
+        System.out.println("✓ Red sword walking sprites loaded!");
 
         System.out.println("✓ Attack sprites loaded! (" + loadedResources + "/" + totalResources + ")");
     }
@@ -366,6 +441,137 @@ public class ResourceLoader {
         spriteArrays.put("skillR_right", skillR_right);
 
         System.out.println("✓ Skill sprites loaded! (" + loadedResources + "/" + totalResources + ")");
+
+
+        BufferedImage[] redSkillQ_down = new BufferedImage[6];
+        redSkillQ_down[0] = loadImageOptimized("res/Skills/Red/First Skill/redattleft0-export.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillQ_down[1] = loadImageOptimized("res/Skills/Red/First Skill/redattleft1-export.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillQ_down[2] = loadImageOptimized("res/Skills/Red/First Skill/redattleft2-export.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillQ_down[3] = loadImageOptimized("res/Skills/Blue/First Skill/blueattleft3-export.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillQ_down[4] = loadImageOptimized("res/Skills/Red/First Skill/redattleft2-export.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillQ_down[5] = loadImageOptimized("res/Skills/Red/First Skill/redattleft1-export.png", spriteSize, spriteSize);
+        loadedResources++;
+        spriteArrays.put("redSkillQ_down", redSkillQ_down);
+
+        BufferedImage[] redSkillQ_up = new BufferedImage[6];
+        redSkillQ_up[0] = loadImageOptimized("res/Skills/Red/SkillQ/up1.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillQ_up[1] = loadImageOptimized("res/Skills/Red/SkillQ/up2.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillQ_up[2] = loadImageOptimized("res/Skills/Red/SkillQ/up3.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillQ_up[3] = loadImageOptimized("res/Skills/Red/SkillQ/up4.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillQ_up[4] = loadImageOptimized("res/Skills/Red/SkillQ/up3.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillQ_up[5] = loadImageOptimized("res/Skills/Red/SkillQ/up2.png", spriteSize, spriteSize);
+        loadedResources++;
+        spriteArrays.put("redSkillQ_up", redSkillQ_up);
+
+        BufferedImage[] redSkillQ_left = new BufferedImage[4];
+        redSkillQ_left[0] = loadImageOptimized("res/Skills/Red/SkillQ/left1.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillQ_left[1] = loadImageOptimized("res/Skills/Red/SkillQ/left2.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillQ_left[2] = loadImageOptimized("res/Skills/Red/SkillQ/left3.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillQ_left[3] = loadImageOptimized("res/Skills/Red/SkillQ/left4.png", spriteSize, spriteSize);
+        loadedResources++;
+        spriteArrays.put("redSkillQ_left", redSkillQ_left);
+
+        BufferedImage[] redSkillQ_right = new BufferedImage[4];
+        redSkillQ_right[0] = loadImageOptimized("res/Skills/Red/SkillQ/right1.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillQ_right[1] = loadImageOptimized("res/Skills/Red/SkillQ/right2.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillQ_right[2] = loadImageOptimized("res/Skills/Red/SkillQ/right3.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillQ_right[3] = loadImageOptimized("res/Skills/Red/SkillQ/right4.png", spriteSize, spriteSize);
+        loadedResources++;
+        spriteArrays.put("redSkillQ_right", redSkillQ_right);
+
+// Red Skill E (4 frames each direction)
+        BufferedImage[] redSkillE_down = new BufferedImage[4];
+        redSkillE_down[0] = loadImageOptimized("res/Skills/Red/SkillE/down1.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillE_down[1] = loadImageOptimized("res/Skills/Red/SkillE/down2.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillE_down[2] = loadImageOptimized("res/Skills/Red/SkillE/down3.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillE_down[3] = loadImageOptimized("res/Skills/Red/SkillE/down4.png", spriteSize, spriteSize);
+        loadedResources++;
+        spriteArrays.put("redSkillE_down", redSkillE_down);
+
+        BufferedImage[] redSkillE_up = new BufferedImage[4];
+        redSkillE_up[0] = loadImageOptimized("res/Skills/Red/SkillE/up1.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillE_up[1] = loadImageOptimized("res/Skills/Red/SkillE/up2.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillE_up[2] = loadImageOptimized("res/Skills/Red/SkillE/up3.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillE_up[3] = loadImageOptimized("res/Skills/Red/SkillE/up4.png", spriteSize, spriteSize);
+        loadedResources++;
+        spriteArrays.put("redSkillE_up", redSkillE_up);
+
+        BufferedImage[] redSkillE_left = new BufferedImage[4];
+        redSkillE_left[0] = loadImageOptimized("res/Skills/Red/SkillE/left1.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillE_left[1] = loadImageOptimized("res/Skills/Red/SkillE/left2.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillE_left[2] = loadImageOptimized("res/Skills/Red/SkillE/left3.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillE_left[3] = loadImageOptimized("res/Skills/Red/SkillE/left4.png", spriteSize, spriteSize);
+        loadedResources++;
+        spriteArrays.put("redSkillE_left", redSkillE_left);
+
+        BufferedImage[] redSkillE_right = new BufferedImage[4];
+        redSkillE_right[0] = loadImageOptimized("res/Skills/Red/SkillE/right1.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillE_right[1] = loadImageOptimized("res/Skills/Red/SkillE/right2.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillE_right[2] = loadImageOptimized("res/Skills/Red/SkillE/right3.png", spriteSize, spriteSize);
+        loadedResources++;
+        redSkillE_right[3] = loadImageOptimized("res/Skills/Red/SkillE/right4.png", spriteSize, spriteSize);
+        loadedResources++;
+        spriteArrays.put("redSkillE_right", redSkillE_right);
+
+// Red Skill R (12 frames each direction - same as blue)
+        BufferedImage[] redSkillR_down = new BufferedImage[12];
+        redSkillR_down[0] = loadImageOptimized("res/Skills/Red/SkillR/down1.png", 200, 200);
+        loadedResources++;
+        redSkillR_down[1] = loadImageOptimized("res/Skills/Red/SkillR/down1.png", 200, 200);
+        loadedResources++;
+        redSkillR_down[2] = loadImageOptimized("res/Skills/Red/SkillR/down2.png", 200, 200);
+        loadedResources++;
+        redSkillR_down[3] = loadImageOptimized("res/Skills/Red/SkillR/down2.png", 200, 200);
+        loadedResources++;
+        redSkillR_down[4] = loadImageOptimized("res/Skills/Red/SkillR/down3.png", 200, 200);
+        loadedResources++;
+        redSkillR_down[5] = loadImageOptimized("res/Skills/Red/SkillR/down3.png", 200, 200);
+        loadedResources++;
+        redSkillR_down[6] = loadImageOptimized("res/Skills/Red/SkillR/down4.png", 200, 200);
+        loadedResources++;
+        redSkillR_down[7] = loadImageOptimized("res/Skills/Red/SkillR/down4.png", 200, 200);
+        loadedResources++;
+        redSkillR_down[8] = loadImageOptimized("res/Skills/Red/SkillR/down4.png", 200, 200);
+        loadedResources++;
+        redSkillR_down[9] = loadImageOptimized("res/Skills/Red/SkillR/down3.png", 200, 200);
+        loadedResources++;
+        redSkillR_down[10] = loadImageOptimized("res/Skills/Red/SkillR/down2.png", 200, 200);
+        loadedResources++;
+        redSkillR_down[11] = loadImageOptimized("res/Skills/Red/SkillR/down1.png", 200, 200);
+        loadedResources++;
+        spriteArrays.put("redSkillR_down", redSkillR_down);
+
+// Continue for up, left, right...
+// (Follow same pattern as blue skill R)
+
+        System.out.println("✓ Red sword skill sprites loaded!");
     }
 
     private void loadMapsOptimized() {
