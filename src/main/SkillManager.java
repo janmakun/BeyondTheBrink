@@ -7,7 +7,7 @@ import java.awt.*;
  */
 public class SkillManager {
     private Skill skillQ; // Sword rotation (4 frames)
-    private Skill skillE; // Second skill (3-4 frames)
+    private ProjectileSkill skillE; // Projectile skill (12 frames)
     private Skill skillR; // Power up (3 frames)
 
     private CharacterLoad character;
@@ -20,7 +20,7 @@ public class SkillManager {
         this.character = character;
         this.resourceLoader = resourceLoader;
 
-        // Skill Q: Sword Rotation - 4 frames, 8 frame delay, 180 frame cooldown (3 seconds at 60fps)
+        // Skill Q: Sword Rotation - 6 frames, 8 frame delay, 180 frame cooldown (3 seconds at 60fps)
         skillQ = new Skill(150, 150, 8, 6, 180);
         skillQ.setFrames(
                 resourceLoader.getSpriteArray("skillQ_up"),
@@ -29,8 +29,9 @@ public class SkillManager {
                 resourceLoader.getSpriteArray("skillQ_right")
         );
 
-        // Skill E: Second skill - 4 frames, 10 frame delay, 240 frame cooldown (4 seconds)
-        skillE = new Skill(150, 150, 10, 4, 240);
+        // Skill E: Ranged skill - 11 frames, 8 frame delay, 240 frame cooldown (4 seconds)
+        // Size: 500x500 (matches character size), Max range: 200 pixels
+        skillE = new ProjectileSkill(600, 600, 8, 11, 240, 200);
         skillE.setFrames(
                 resourceLoader.getSpriteArray("skillE_up"),
                 resourceLoader.getSpriteArray("skillE_down"),
@@ -38,7 +39,7 @@ public class SkillManager {
                 resourceLoader.getSpriteArray("skillE_right")
         );
 
-        // Skill R: Power Up - 3 frames, 12 frame delay, 360 frame cooldown (6 seconds)
+        // Skill R: Power Up - 12 frames, 10 frame delay, 60 frame cooldown (1 second)
         skillR = new Skill(150, 150, 10, 12, 60);
         skillR.setFrames(
                 resourceLoader.getSpriteArray("skillR_up"),
@@ -109,6 +110,7 @@ public class SkillManager {
     public void activateSkillE(String direction) {
         if (!character.isAttacking()) {
             skillE.activate(character.getX(), character.getY(), direction);
+            System.out.println("Skill E (Projectile) activated! Direction: " + direction);
         }
     }
 
@@ -119,14 +121,15 @@ public class SkillManager {
     }
 
     public void update() {
+        // All skills follow character position
         skillQ.update(character.getX(), character.getY());
         skillE.update(character.getX(), character.getY());
-        skillR.update(character.getX() , character.getY());
+        skillR.update(character.getX(), character.getY());
     }
 
     public void draw(Graphics g, int cameraX, int cameraY) {
         skillQ.draw(g, cameraX, cameraY);
-        skillE.draw(g, cameraX, cameraY);
+        skillE.draw(g, cameraX + 230, cameraY + 220);
         skillR.draw(g, cameraX + 5, cameraY + 25);
     }
 
@@ -135,6 +138,6 @@ public class SkillManager {
     }
 
     public Skill getSkillQ() { return skillQ; }
-    public Skill getSkillE() { return skillE; }
+    public ProjectileSkill getSkillE() { return (ProjectileSkill) skillE; }
     public Skill getSkillR() { return skillR; }
 }

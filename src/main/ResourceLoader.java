@@ -495,50 +495,108 @@ public class ResourceLoader {
         loadedResources++;
         spriteArrays.put("redSkillQ_right", redSkillQ_right);
 
-// Red Skill E (4 frames each direction)
-        BufferedImage[] redSkillE_down = new BufferedImage[4];
-        redSkillE_down[0] = loadImageOptimized("res/Skills/Red/SkillE/down1.png", spriteSize, spriteSize);
+// RED SWORD - Skill E (12 frames each direction)
+        BufferedImage[] redSkillE_down = new BufferedImage[11];
+        redSkillE_down[0] = loadImageOptimized("res/Skills/Red/Second Skill/2ndskill1.png", 500, 500);
         loadedResources++;
-        redSkillE_down[1] = loadImageOptimized("res/Skills/Red/SkillE/down2.png", spriteSize, spriteSize);
+        redSkillE_down[1] = loadImageOptimized("res/Skills/Red/Second Skill/2ndskill2.png", 500, 500);
         loadedResources++;
-        redSkillE_down[2] = loadImageOptimized("res/Skills/Red/SkillE/down3.png", spriteSize, spriteSize);
+        redSkillE_down[2] = loadImageOptimized("res/Skills/Red/Second Skill/2ndskill3.png", 500, 500);
         loadedResources++;
-        redSkillE_down[3] = loadImageOptimized("res/Skills/Red/SkillE/down4.png", spriteSize, spriteSize);
+        redSkillE_down[3] = loadImageOptimized("res/Skills/Red/Second Skill/2ndskill4.png", 500, 500);
+        loadedResources++;
+        redSkillE_down[4] = loadImageOptimized("res/Skills/Red/Second Skill/2ndskill5.png", 500, 500);
+        loadedResources++;
+        redSkillE_down[5] = loadImageOptimized("res/Skills/Red/Second Skill/2ndskill6.png", 500, 500);
+        loadedResources++;
+        redSkillE_down[6] = loadImageOptimized("res/Skills/Red/Second Skill/2ndskill7.png", 500, 500);
+        loadedResources++;
+        redSkillE_down[7] = loadImageOptimized("res/Skills/Red/Second Skill/2ndskill8.png", 500, 500);
+        loadedResources++;
+        redSkillE_down[8] = loadImageOptimized("res/Skills/Red/Second Skill/2ndskill9.png", 500, 500);
+        loadedResources++;
+        redSkillE_down[9] = loadImageOptimized("res/Skills/Red/Second Skill/2ndskill10.png", 500, 500);
+        loadedResources++;
+        redSkillE_down[10] = loadImageOptimized("res/Skills/Red/Second Skill/2ndskill11.png", 500, 500);
         loadedResources++;
         spriteArrays.put("redSkillE_down", redSkillE_down);
 
-        BufferedImage[] redSkillE_up = new BufferedImage[4];
-        redSkillE_up[0] = loadImageOptimized("res/Skills/Red/SkillE/up1.png", spriteSize, spriteSize);
+        BufferedImage[] redSkillE_up = new BufferedImage[11];
+        redSkillE_up[0] = loadImageOptimized("res/Skills/Red/SkillE/up1.png", 75, 75);
         loadedResources++;
-        redSkillE_up[1] = loadImageOptimized("res/Skills/Red/SkillE/up2.png", spriteSize, spriteSize);
+        redSkillE_up[1] = loadImageOptimized("res/Skills/Red/SkillE/up2.png", 75, 75);
         loadedResources++;
-        redSkillE_up[2] = loadImageOptimized("res/Skills/Red/SkillE/up3.png", spriteSize, spriteSize);
+        redSkillE_up[2] = loadImageOptimized("res/Skills/Red/SkillE/up3.png", 75, 75);
         loadedResources++;
-        redSkillE_up[3] = loadImageOptimized("res/Skills/Red/SkillE/up4.png", spriteSize, spriteSize);
+        redSkillE_up[3] = loadImageOptimized("res/Skills/Red/SkillE/up4.png", 75, 75);
+        loadedResources++;
+        redSkillE_up[4] = loadImageOptimized("res/Skills/Red/SkillE/up5.png", 75, 75);
+        loadedResources++;
+        redSkillE_up[5] = loadImageOptimized("res/Skills/Red/SkillE/up6.png", 75, 75);
+        loadedResources++;
+        redSkillE_up[6] = loadImageOptimized("res/Skills/Red/SkillE/up7.png", 75, 75);
+        loadedResources++;
+        redSkillE_up[7] = loadImageOptimized("res/Skills/Red/SkillE/up8.png", 75, 75);
+        loadedResources++;
+        redSkillE_up[8] = loadImageOptimized("res/Skills/Red/SkillE/up9.png", 75, 75);
+        loadedResources++;
+        redSkillE_up[9] = loadImageOptimized("res/Skills/Red/SkillE/up10.png", 75, 75);
+        loadedResources++;
+        redSkillE_up[10] = loadImageOptimized("res/Skills/Red/SkillE/up11.png", 75, 75);
         loadedResources++;
         spriteArrays.put("redSkillE_up", redSkillE_up);
 
-        BufferedImage[] redSkillE_left = new BufferedImage[4];
-        redSkillE_left[0] = loadImageOptimized("res/Skills/Red/SkillE/left1.png", spriteSize, spriteSize);
+        BufferedImage[] redSkillE_left = new BufferedImage[11];
+        redSkillE_left[0] = loadImageOptimized("res/Skills/Red/SkillE/left1.png", 75, 75);
         loadedResources++;
-        redSkillE_left[1] = loadImageOptimized("res/Skills/Red/SkillE/left2.png", spriteSize, spriteSize);
+        redSkillE_left[1] = loadImageOptimized("res/Skills/Red/SkillE/left2.png", 75, 75);
         loadedResources++;
-        redSkillE_left[2] = loadImageOptimized("res/Skills/Red/SkillE/left3.png", spriteSize, spriteSize);
+        redSkillE_left[2] = loadImageOptimized("res/Skills/Red/SkillE/left3.png", 75, 75);
         loadedResources++;
-        redSkillE_left[3] = loadImageOptimized("res/Skills/Red/SkillE/left4.png", spriteSize, spriteSize);
+        redSkillE_left[3] = loadImageOptimized("res/Skills/Red/SkillE/left4.png", 75, 75);
+        loadedResources++;
+        redSkillE_left[4] = loadImageOptimized("res/Skills/Red/SkillE/left5.png", 75, 75);
+        loadedResources++;
+        redSkillE_left[5] = loadImageOptimized("res/Skills/Red/SkillE/left6.png", 75, 75);
+        loadedResources++;
+        redSkillE_left[6] = loadImageOptimized("res/Skills/Red/SkillE/left7.png", 75, 75);
+        loadedResources++;
+        redSkillE_left[7] = loadImageOptimized("res/Skills/Red/SkillE/left8.png", 75, 75);
+        loadedResources++;
+        redSkillE_left[8] = loadImageOptimized("res/Skills/Red/SkillE/left9.png", 75, 75);
+        loadedResources++;
+        redSkillE_left[9] = loadImageOptimized("res/Skills/Red/SkillE/left10.png", 75, 75);
+        loadedResources++;
+        redSkillE_left[10] = loadImageOptimized("res/Skills/Red/SkillE/left11.png", 75, 75);
         loadedResources++;
         spriteArrays.put("redSkillE_left", redSkillE_left);
 
-        BufferedImage[] redSkillE_right = new BufferedImage[4];
-        redSkillE_right[0] = loadImageOptimized("res/Skills/Red/SkillE/right1.png", spriteSize, spriteSize);
+        BufferedImage[] redSkillE_right = new BufferedImage[11];
+        redSkillE_right[0] = loadImageOptimized("res/Skills/Red/SkillE/right1.png", 75, 75);
         loadedResources++;
-        redSkillE_right[1] = loadImageOptimized("res/Skills/Red/SkillE/right2.png", spriteSize, spriteSize);
+        redSkillE_right[1] = loadImageOptimized("res/Skills/Red/SkillE/right2.png", 75, 75);
         loadedResources++;
-        redSkillE_right[2] = loadImageOptimized("res/Skills/Red/SkillE/right3.png", spriteSize, spriteSize);
+        redSkillE_right[2] = loadImageOptimized("res/Skills/Red/SkillE/right3.png", 75, 75);
         loadedResources++;
-        redSkillE_right[3] = loadImageOptimized("res/Skills/Red/SkillE/right4.png", spriteSize, spriteSize);
+        redSkillE_right[3] = loadImageOptimized("res/Skills/Red/SkillE/right4.png", 75, 75);
+        loadedResources++;
+        redSkillE_right[4] = loadImageOptimized("res/Skills/Red/SkillE/right5.png", 75, 75);
+        loadedResources++;
+        redSkillE_right[5] = loadImageOptimized("res/Skills/Red/SkillE/right6.png", 75, 75);
+        loadedResources++;
+        redSkillE_right[6] = loadImageOptimized("res/Skills/Red/SkillE/right7.png", 75, 75);
+        loadedResources++;
+        redSkillE_right[7] = loadImageOptimized("res/Skills/Red/SkillE/right8.png", 75, 75);
+        loadedResources++;
+        redSkillE_right[8] = loadImageOptimized("res/Skills/Red/SkillE/right9.png", 75, 75);
+        loadedResources++;
+        redSkillE_right[9] = loadImageOptimized("res/Skills/Red/SkillE/right10.png", 75, 75);
+        loadedResources++;
+        redSkillE_right[10] = loadImageOptimized("res/Skills/Red/SkillE/right11.png", 75, 75);
         loadedResources++;
         spriteArrays.put("redSkillE_right", redSkillE_right);
+
+        System.out.println("✓ Projectile skill sprites loaded (12 frames)!");
 
 // Red Skill R (12 frames each direction - same as blue)
         BufferedImage[] redSkillR_down = new BufferedImage[12];
@@ -606,9 +664,19 @@ public class ResourceLoader {
     private void loadNPCAndChestAssets() {
         System.out.println("🎮 Loading NPC and chest assets...");
 
-        // Load NPC sprite (blue rogue) - use your actual sprite
-        images.put("npcBlueRogue",  loadImageOptimized("res/NPC/FinalBossDungeon-export.png", 150, 150));
+        // Load NPC sprites (5 frames for idle animation)
+        BufferedImage[] npcBlueRogueFrames = new BufferedImage[5];
+        npcBlueRogueFrames[0] = loadImageOptimized("res/NPC/BlueRogue1.png", 150, 150);
         loadedResources++;
+        npcBlueRogueFrames[1] = loadImageOptimized("res/NPC/BlueRogue2.png", 150, 150);
+        loadedResources++;
+        npcBlueRogueFrames[2] = loadImageOptimized("res/NPC/BlueRogue3.png", 150, 150);
+        loadedResources++;
+        npcBlueRogueFrames[3] = loadImageOptimized("res/NPC/BlueRogue4.png", 150, 150);
+        loadedResources++;
+        npcBlueRogueFrames[4] = loadImageOptimized("res/NPC/BlueRogue5.png", 150, 150);
+        loadedResources++;
+        spriteArrays.put("npcBlueRogue", npcBlueRogueFrames);
 
         // Load chest frames
         BufferedImage[] chestFrames = new BufferedImage[3];
@@ -618,21 +686,16 @@ public class ResourceLoader {
         spriteArrays.put("chest", chestFrames);
         loadedResources += 3;
 
-        // Load sword selection assets - REPLACE THESE WITH YOUR ACTUAL IMAGES
-        // Background: 850x700
+        // Load sword selection assets
         images.put("swordSelectionBg", loadImageOptimized("res/ChoosingSword/chooseBGwithdetailsFnal.png", 850, 700));
         loadedResources++;
-
-        // Sword icons (optional - can be null if already on background)
-        images.put("blueSwordIcon", null); // Set to null if icons are on background
+        images.put("blueSwordIcon", null);
         loadedResources++;
-        images.put("redSwordIcon", null); // Set to null if icons are on background
+        images.put("redSwordIcon", null);
         loadedResources++;
-
-        // Buttons: 272x102 each (can be null if buttons are on background)
-        images.put("blueButton", loadImageOptimized("res/ChoosingSword/ChooseButtonBlue.png", 272, 102)); // Set to null if button is on background
+        images.put("blueButton", loadImageOptimized("res/ChoosingSword/ChooseButtonBlue.png", 272, 102));
         loadedResources++;
-        images.put("redButton", loadImageOptimized("res/ChoosingSword/chooseButtonRed.png", 272, 102)); // Set to null if button is on background
+        images.put("redButton", loadImageOptimized("res/ChoosingSword/chooseButtonRed.png", 272, 102));
         loadedResources++;
 
         System.out.println("✓ NPC and chest assets loaded!");

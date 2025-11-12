@@ -66,11 +66,11 @@ public class GamePanel extends JPanel implements Runnable {
         monsterManager.loadMap1Monsters();
 
         // Initialize NPC and Chest with SAME coordinate system as monsters
-        blueRogueNPC = new NPC(820, -552, resourceLoader.getImage("npcBlueRogue"),
+        blueRogueNPC = new NPC(820, -552, resourceLoader.getSpriteArray("npcBlueRogue"),
                 "Greetings, traveler! Open the chest ahead to claim your legendary sword. Choose wisely, for your choice will shape your destiny!");
 
         // Place Chest
-        swordChest = new Chest(650, -122, resourceLoader.getSpriteArray("chest"));
+        swordChest = new Chest(640, -122, resourceLoader.getSpriteArray("chest"));
 
         System.out.println("=== INITIALIZATION ===");
         System.out.println("Character starts at: (100, 100)");
@@ -270,35 +270,39 @@ public class GamePanel extends JPanel implements Runnable {
         int nextX = character.getX();
         int nextY = character.getY();
 
-        if (keyHandler.isDownPressed()) {
-            nextY += speed;
-            moving = true;
-            direction = "down";
-        }
-        if (keyHandler.isUpPressed()) {
-            nextY -= speed;
-            moving = true;
-            direction = "up";
-        }
-        if (keyHandler.isRightPressed()) {
-            nextX += speed;
-            moving = true;
-            direction = "right";
-        }
-        if (keyHandler.isLeftPressed()) {
-            nextX -= speed;
-            moving = true;
-            direction = "left";
+        // Check if any skill is active - if so, prevent movement
+        boolean skillActive = skillManager.isAnySkillActive();
+
+        // Only allow movement if no skills are active and not attacking
+        if (!skillActive && !character.isAttacking()) {
+            if (keyHandler.isDownPressed()) {
+                nextY += speed;
+                moving = true;
+                direction = "down";
+            }
+            if (keyHandler.isUpPressed()) {
+                nextY -= speed;
+                moving = true;
+                direction = "up";
+            }
+            if (keyHandler.isRightPressed()) {
+                nextX += speed;
+                moving = true;
+                direction = "right";
+            }
+            if (keyHandler.isLeftPressed()) {
+                nextX -= speed;
+                moving = true;
+                direction = "left";
+            }
+
+            // Only update position if moving and no collision
+            if (moving && !collision.checkCollision(nextX + 50, nextY + 35, character.getWidth() - 100, character.getHeight() - 65)) {
+                character.setPosition(nextX, nextY);
+            }
         }
 
-        if (!character.isAttacking() &&
-                !collision.checkCollision(nextX + 50, nextY + 35, character.getWidth() - 100, character.getHeight() - 65)) {
-            character.setPosition(nextX, nextY);
-        } else if (character.isAttacking() &&
-                !collision.checkCollision(nextX + 50, nextY + 35, character.getWidth() - 100, character.getHeight() - 65)) {
-            character.setPosition(nextX, nextY);
-        }
-
+        // Update character animation (but not position if skill is active)
         character.update(moving, direction);
         camera.followCharacter(character);
         monsterManager.update(character, collision);
@@ -336,13 +340,13 @@ public class GamePanel extends JPanel implements Runnable {
     public void switchMap() {
         if (currentMap == 1) {
             currentMap = 2;
-            character.setPosition(-780, -800);
+            character.setPosition(-780, -900);
             collision.loadMap2Collisions();
             monsterManager.loadMap2Monsters();
             System.out.println("Switched to Map 2");
         } else {
             currentMap = 1;
-            character.setPosition(100, 200);
+            character.setPosition(100, 100);
             collision.loadMap1Collisions();
             monsterManager.loadMap1Monsters();
             System.out.println("Switched to Map 1");

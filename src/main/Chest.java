@@ -19,8 +19,8 @@ public class Chest {
         this.x = x;
         this.y = y;
         this.sprites = sprites;
-        this.width = 100;
-        this.height = 100;
+        this.width = 150;
+        this.height = 150;
     }
 
     public void open() {
@@ -66,7 +66,7 @@ public class Chest {
 
         // Debug output
         if (actualDistance < distance + 50) { // Show when somewhat close
-            System.out.println("Player distance from Chest: " + (int)actualDistance + " (need < " + distance + ")");
+//            System.out.println("Player distance from Chest: " + (int)actualDistance + " (need < " + distance + ")");
         }
 
         return actualDistance < distance;

@@ -6,19 +6,23 @@ import java.awt.image.BufferedImage;
 public class NPC {
     private int x, y;
     private int width, height;
-    private BufferedImage sprite;
+    private BufferedImage[] sprites; // Changed from single sprite to array
+    private int currentFrame = 0;
+    private int idleAnimationTimer = 0;
+    private static final int IDLE_FRAME_DELAY = 15; // Adjust speed as needed
+
     private String dialogue;
     private boolean showDialogue = false;
     private int dialogueTimer = 0;
     private static final int DIALOGUE_DURATION = 300; // 5 seconds at 60 FPS
 
-    public NPC(int x, int y, BufferedImage sprite, String dialogue) {
+    public NPC(int x, int y, BufferedImage[] sprites, String dialogue) {
         this.x = x;
         this.y = y;
-        this.sprite = sprite;
+        this.sprites = sprites;
         this.dialogue = dialogue;
-        this.width = 150;
-        this.height = 150;
+        this.width = 175;
+        this.height = 175;
     }
 
     public void interact() {
@@ -28,11 +32,22 @@ public class NPC {
     }
 
     public void update() {
+        // Update dialogue timer
         if (showDialogue && dialogueTimer > 0) {
             dialogueTimer--;
             if (dialogueTimer <= 0) {
                 showDialogue = false;
             }
+        }
+
+        // Update idle animation - cycle through frames
+        idleAnimationTimer++;
+        if (idleAnimationTimer >= IDLE_FRAME_DELAY) {
+            currentFrame++;
+            if (currentFrame >= sprites.length) {
+                currentFrame = 0; // Loop back to first frame
+            }
+            idleAnimationTimer = 0;
         }
     }
 
@@ -60,8 +75,8 @@ public class NPC {
 
     public void draw(Graphics g, int cameraX, int cameraY) {
         // Draw without camera offset (same as monsters)
-        if (sprite != null) {
-            g.drawImage(sprite, x, y, width, height, null);
+        if (sprites != null && currentFrame < sprites.length && sprites[currentFrame] != null) {
+            g.drawImage(sprites[currentFrame], x, y, width, height, null);
         }
 
         // Draw dialogue box if active

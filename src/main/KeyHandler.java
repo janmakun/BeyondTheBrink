@@ -20,10 +20,10 @@ public class KeyHandler implements KeyListener {
 
         if (gp.getGameState() == GameState.PLAYING) {
             // Movement is always allowed
-            if (code == KeyEvent.VK_UP) upPressed = true;
-            if (code == KeyEvent.VK_DOWN) downPressed = true;
-            if (code == KeyEvent.VK_LEFT) leftPressed = true;
-            if (code == KeyEvent.VK_RIGHT) rightPressed = true;
+            if (code == KeyEvent.VK_UP || code == KeyEvent.VK_W) upPressed = true;
+            if (code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S) downPressed = true;
+            if (code == KeyEvent.VK_LEFT || code == KeyEvent.VK_A) leftPressed = true;
+            if (code == KeyEvent.VK_RIGHT || code == KeyEvent.VK_D) rightPressed = true;
 
             // Attack key - only works if sword is equipped AND visible
             if (code == KeyEvent.VK_SPACE && !gp.character.isAttacking()) {

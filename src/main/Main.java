@@ -25,7 +25,7 @@ import javax.swing.JFrame;
 
 public class Main {
     // Set this to true when debugging to skip startup/loading screens
-    private static final boolean DEBUG_MODE = false; //set mu nyang true ini patse mag debug ka gege
+    private static final boolean DEBUG_MODE = true; //set mu nyang true ini patse mag debug ka gege
 
     public static void main(String[] args) {
         System.out.println("Hello");
