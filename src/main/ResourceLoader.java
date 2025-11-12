@@ -19,6 +19,7 @@ public class ResourceLoader {
     private int attackSpriteSize = 150;
     private int skillOneSize = 75;
     private int swordWalkSize = 75;
+    private int UISize = 120;
 
     public ResourceLoader() {
         images = new HashMap<>();
@@ -38,8 +39,8 @@ public class ResourceLoader {
         System.out.println("   Sprite size: " + spriteSize + "x" + spriteSize);
         System.out.println("   Attack sprite size: " + attackSpriteSize + "x" + attackSpriteSize);
 
-        // Calculate total resources (added NPC, chest, sword selection assets)
-        totalResources = 10 + 2 + 5 + 16 + 10; // Added 10 for new features
+        // Calculate total resources (added UI icons)
+        totalResources = 10 + 2 + 5 + 16 + 10 + 8; // Added 8 for UI icons
 
         System.gc();
 
@@ -55,7 +56,8 @@ public class ResourceLoader {
         loadSkillSprites();
         loadMapsOptimized();
         loadPauseMenuAssets();
-        loadNPCAndChestAssets(); // New method
+        loadNPCAndChestAssets();
+        loadUIIcons(); // New method for UI icons
 
         System.out.println("✅ All resources loaded successfully!");
         finished = true;
@@ -218,7 +220,7 @@ public class ResourceLoader {
         BufferedImage[] blueSwordUp = new BufferedImage[3];
         blueSwordUp[0] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 - 2025-11-11T145801.533.png", swordWalkSize, swordWalkSize);
         blueSwordUp[1] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 - 2025-11-11T145038.497.png", swordWalkSize, swordWalkSize);
-        blueSwordUp[2] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 - 2025-11-11T145247.632.png", swordWalkSize, swordWalkSize); //
+        blueSwordUp[2] = loadImageOptimized("res/BlueSwordWalking/pixil-frame-0 - 2025-11-11T145247.632.png", swordWalkSize, swordWalkSize);
         spriteArrays.put("blueSwordWalk_up", blueSwordUp);
 
         BufferedImage[] blueSwordLeft = new BufferedImage[3];
@@ -649,7 +651,7 @@ public class ResourceLoader {
     }
 
     private void loadPauseMenuAssets() {
-        System.out.println("⏸️ Loading pause menu assets...");
+        System.out.println("⸏ Loading pause menu assets...");
         images.put("pauseBackground", loadImageOptimized("res/Pause/GamePausedBgWithFont&PauseBtn4.png", 500, 720));
         loadedResources++;
         images.put("continueButton", loadImageOptimized("res/Pause/continueButton.png", 400, 300));
@@ -664,7 +666,6 @@ public class ResourceLoader {
     private void loadNPCAndChestAssets() {
         System.out.println("🎮 Loading NPC and chest assets...");
 
-        // Load NPC sprites (5 frames for idle animation)
         BufferedImage[] npcBlueRogueFrames = new BufferedImage[5];
         npcBlueRogueFrames[0] = loadImageOptimized("res/NPC/BlueRogue1.png", 150, 150);
         loadedResources++;
@@ -678,7 +679,6 @@ public class ResourceLoader {
         loadedResources++;
         spriteArrays.put("npcBlueRogue", npcBlueRogueFrames);
 
-        // Load chest frames
         BufferedImage[] chestFrames = new BufferedImage[3];
         chestFrames[0] = loadImageOptimized("res/Chest/Chest32k1.png", 100, 100);
         chestFrames[1] = loadImageOptimized("res/Chest/Chest32k2.png", 100, 100);
@@ -686,7 +686,6 @@ public class ResourceLoader {
         spriteArrays.put("chest", chestFrames);
         loadedResources += 3;
 
-        // Load sword selection assets
         images.put("swordSelectionBg", loadImageOptimized("res/ChoosingSword/chooseBGwithdetailsFnal.png", 850, 700));
         loadedResources++;
         images.put("blueSwordIcon", null);
@@ -701,35 +700,39 @@ public class ResourceLoader {
         System.out.println("✓ NPC and chest assets loaded!");
     }
 
-    private BufferedImage createPlaceholderImage(int width, int height, Color color) {
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = img.createGraphics();
-        g2.setColor(color);
-        g2.fillRect(0, 0, width, height);
-        g2.setColor(Color.WHITE);
-        g2.setStroke(new BasicStroke(2));
-        g2.drawRect(0, 0, width - 1, height - 1);
-        g2.dispose();
-        return img;
-    }
+    private void loadUIIcons() {
+        System.out.println("🎨 Loading UI icons...");
 
-    private BufferedImage createPlaceholderChest(int width, int height, boolean open) {
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = img.createGraphics();
-        g2.setColor(new Color(139, 69, 19)); // Brown
-        g2.fillRect(10, 30, width - 20, height - 30);
-        if (open) {
-            g2.setColor(new Color(255, 215, 0)); // Gold
-            g2.fillOval(width / 2 - 15, height / 2 - 15, 30, 30);
-        }
-        g2.dispose();
-        return img;
+        // Blue sword UI icons (60x60 for consistency)
+        images.put("blueSkillQIcon", loadImageOptimized("res/UIIcons/skills2Icon.png", UISize, UISize));
+        loadedResources++;
+        images.put("blueSkillEIcon", loadImageOptimized("res/UIIcons/eruptionSkillIconBLUE.png", UISize, UISize));
+        loadedResources++;
+        images.put("blueSkillRIcon", loadImageOptimized("res/UIIcons/BlueBuffSkillIcon.png", UISize, UISize));
+        loadedResources++;
+        images.put("blueSwordToggleIcon", loadImageOptimized("res/UIIcons/swordBlueIcon.png", UISize, UISize));
+        loadedResources++;
+
+        // Red sword UI icons
+        images.put("redSkillQIcon", loadImageOptimized("res/UIIcons/redSkillIcon2.png", UISize, UISize));
+        loadedResources++;
+        images.put("redSkillEIcon", loadImageOptimized("res/UIIcons/eruptionskillIconRED.png", UISize, UISize));
+        loadedResources++;
+        images.put("redSkillRIcon", loadImageOptimized("res/UIIcons/buffSkillRed.png", UISize, UISize));
+        loadedResources++;
+        images.put("redSwordToggleIcon", loadImageOptimized("res/UIIcons/redSwordIcon.png", UISize, UISize));
+        loadedResources++;
+
+        System.out.println("✓ UI icons loaded!");
     }
 
     private BufferedImage loadImageOptimized(String path, int targetWidth, int targetHeight) {
         try {
             BufferedImage raw = ImageIO.read(new File(path));
-            if (raw == null) return null;
+            if (raw == null) {
+                System.err.println("    ✗ Image is null: " + path);
+                return createPlaceholderImage(targetWidth, targetHeight, Color.GRAY);
+            }
 
             GraphicsConfiguration gc = GraphicsEnvironment
                     .getLocalGraphicsEnvironment()
@@ -751,8 +754,20 @@ public class ResourceLoader {
         } catch (IOException e) {
             System.err.println("    ✗ Failed to load: " + path);
             e.printStackTrace();
-            return null;
+            return createPlaceholderImage(targetWidth, targetHeight, Color.GRAY);
         }
+    }
+
+    private BufferedImage createPlaceholderImage(int width, int height, Color color) {
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = img.createGraphics();
+        g2.setColor(color);
+        g2.fillRect(0, 0, width, height);
+        g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke(2));
+        g2.drawRect(0, 0, width - 1, height - 1);
+        g2.dispose();
+        return img;
     }
 
     private BufferedImage loadLargeImageOptimized(String path) {
@@ -826,6 +841,7 @@ public class ResourceLoader {
     public int getSkillSpriteSize() {
         return skillOneSize;
     }
+
     public int getSwordWalkSize(){
         return swordWalkSize;
     }

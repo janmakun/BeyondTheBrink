@@ -229,17 +229,17 @@ public class Collision {
         int hitboxHeight = charHeight - 65;
 
         // Draw hitbox outline
-        g2.setColor(Color.GREEN);
-        g2.setStroke(new BasicStroke(2));
-        g2.drawRect(hitboxX, hitboxY, hitboxWidth, hitboxHeight);
+//        g2.setColor(Color.GREEN);
+//        g2.setStroke(new BasicStroke(2));
+//        g2.drawRect(hitboxX, hitboxY, hitboxWidth, hitboxHeight);
 
         // Draw corner points
-        g2.setColor(Color.CYAN);
-        int pointSize = 6;
-        g2.fillOval(hitboxX - pointSize/2, hitboxY - pointSize/2, pointSize, pointSize); // Top-left
-        g2.fillOval(hitboxX + hitboxWidth - pointSize/2, hitboxY - pointSize/2, pointSize, pointSize); // Top-right
-        g2.fillOval(hitboxX - pointSize/2, hitboxY + hitboxHeight - pointSize/2, pointSize, pointSize); // Bottom-left
-        g2.fillOval(hitboxX + hitboxWidth - pointSize/2, hitboxY + hitboxHeight - pointSize/2, pointSize, pointSize); // Bottom-right
+//        g2.setColor(Color.CYAN);
+//        int pointSize = 6;
+//        g2.fillOval(hitboxX - pointSize/2, hitboxY - pointSize/2, pointSize, pointSize); // Top-left
+//        g2.fillOval(hitboxX + hitboxWidth - pointSize/2, hitboxY - pointSize/2, pointSize, pointSize); // Top-right
+//        g2.fillOval(hitboxX - pointSize/2, hitboxY + hitboxHeight - pointSize/2, pointSize, pointSize); // Bottom-left
+//        g2.fillOval(hitboxX + hitboxWidth - pointSize/2, hitboxY + hitboxHeight - pointSize/2, pointSize, pointSize); // Bottom-right
     }
 
     // Print all wall coordinates (useful for copying to code)

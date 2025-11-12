@@ -4,6 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -368,7 +369,7 @@ public class GamePanel extends JPanel implements Runnable {
             map2.draw(g, 4000, 4000, 0, 0);
         }
 
-        collision.drawWalls(g2);
+//        collision.drawWalls(g2);
 
         // Draw NPC (same drawing style as monsters - no camera offset)
         if (blueRogueNPC != null) {
@@ -402,13 +403,18 @@ public class GamePanel extends JPanel implements Runnable {
 
         if (gameState == GameState.PLAYING) {
             pauseMenu.drawPauseIcon(g2);
-            drawSkillCooldowns(g2);
+
+            // Only draw skill cooldowns if player has chosen a sword
+            if (currentSword != SwordType.NONE) {
+                drawSkillCooldowns(g2);
+            }
+
             drawSwordIndicator(g2);
             drawWarningMessage(g2);
 
             // Debug: Show coordinates
             if (showCoordinates) {
-                drawCoordinateInfo(g2);
+//                drawCoordinateInfo(g2);
             }
         }
 
@@ -433,22 +439,62 @@ public class GamePanel extends JPanel implements Runnable {
     private void drawSwordIndicator(Graphics2D g2) {
         if (currentSword == SwordType.NONE) return;
 
-        int x = WIDTH - 120;
-        int y = 20;
+        int iconSize = 60;
+        int padding = 10;
+        int x = WIDTH - iconSize - padding;
+        int y = HEIGHT - iconSize - padding;
 
+        // Get the correct sword toggle icon
+        String iconKey = (currentSword == SwordType.RED_SWORD) ? "redSwordToggleIcon" : "blueSwordToggleIcon";
+        BufferedImage swordIcon = resourceLoader.getImage(iconKey);
+
+        // Draw sword icon
+        if (swordIcon != null) {
+            g2.drawImage(swordIcon, x - 35, y - 43, 120, 120, null);
+        } else {
+            // Fallback
+            Color swordColor = (currentSword == SwordType.BLUE_SWORD) ?
+                    new Color(50, 150, 255, 200) : new Color(255, 50, 50, 200);
+            g2.setColor(swordColor);
+            g2.fillRoundRect(x, y-20, 120, 120, 10, 10);
+        }
+
+        // Dim overlay if sword is off
+        if (!swordVisible) {
+            g2.setColor(new Color(0, 0, 0, 150));
+            g2.fillRoundRect(x - 10, y-20, 70, 70, 10, 10);
+        }
+
+        // Draw border
+        Color borderColor = swordVisible ?
+                ((currentSword == SwordType.BLUE_SWORD) ? new Color(100, 200, 255) : new Color(255, 100, 100)) :
+                new Color(150, 150, 150);
+        g2.setColor(borderColor);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(x - 10, y -20, 70, 70, 10, 10);
+
+        // Draw "1" below the icon
+        g2.setFont(new Font("Arial", Font.BOLD, 16));
+        FontMetrics fm = g2.getFontMetrics();
+        String keyText = "1";
+        int textX = x + (iconSize - fm.stringWidth(keyText)) / 2;
+        int textY = y + iconSize + 20;
+
+        // Background for text
         g2.setColor(new Color(0, 0, 0, 150));
-        g2.fillRoundRect(x, y, 100, 30, 10, 10);
-
-        Color swordColor = (currentSword == SwordType.BLUE_SWORD) ?
-                new Color(50, 150, 255) : new Color(255, 50, 50);
-        g2.setColor(swordColor);
-        g2.setStroke(new BasicStroke(2));
-        g2.drawRoundRect(x, y, 100, 30, 10, 10);
+        g2.fillRoundRect(textX - 10, textY - fm.getAscent() - 12,
+                fm.stringWidth(keyText) + 10, fm.getHeight(), 5, 5);
 
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.BOLD, 12));
-        String text = swordVisible ? "Sword: ON" : "Sword: OFF";
-        g2.drawString(text, x + 10, y + 20);
+        g2.drawString(keyText, textX - 6, textY - 12);
+
+        // Status text (ON/OFF) - optional, can be removed if you want cleaner UI
+        g2.setFont(new Font("Arial", Font.BOLD, 10));
+//        String status = swordVisible ? "ON" : "OFF";
+        Color statusColor = swordVisible ? Color.GREEN : Color.RED;
+        g2.setColor(statusColor);
+//        int statusX = x + (iconSize - g2.getFontMetrics().stringWidth(status)) / 2;
+//        g2.drawString(status, statusX, y + iconSize / 2 + 5);
     }
 
     private void drawWarningMessage(Graphics2D g2) {
@@ -478,49 +524,79 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void drawSkillCooldowns(Graphics2D g2) {
-        int iconSize = 40;
+        int iconSize = 60;
         int padding = 10;
+        int startX = padding;
         int startY = HEIGHT - iconSize - padding;
 
-        drawCooldownIcon(g2, padding, startY, iconSize, "Q",
+        // Get the correct icon prefix based on current sword
+        String iconPrefix = (currentSword == SwordType.RED_SWORD) ? "red" : "blue";
+
+        // Draw Q skill icon
+        BufferedImage qIcon = resourceLoader.getImage(iconPrefix + "SkillQIcon");
+        drawCooldownIcon(g2, padding, startY -20, iconSize, "Q",
                 skillManager.getSkillQ().isOnCooldown(),
-                skillManager.getSkillQ().getCooldownPercent());
+                skillManager.getSkillQ().getCooldownPercent(),
+                qIcon);
 
-        drawCooldownIcon(g2, padding + iconSize + padding, startY, iconSize, "E",
+        // Draw E skill icon
+        BufferedImage eIcon = resourceLoader.getImage(iconPrefix + "SkillEIcon");
+        drawCooldownIcon(g2, padding + iconSize + padding, startY -20, iconSize, "E",
                 skillManager.getSkillE().isOnCooldown(),
-                skillManager.getSkillE().getCooldownPercent());
+                skillManager.getSkillE().getCooldownPercent(),
+                eIcon);
 
-        drawCooldownIcon(g2, padding + (iconSize + padding) * 2, startY, iconSize, "R",
+        // Draw R skill icon
+        BufferedImage rIcon = resourceLoader.getImage(iconPrefix + "SkillRIcon");
+        drawCooldownIcon(g2, padding + (iconSize + padding) * 2, startY -20, iconSize, "R",
                 skillManager.getSkillR().isOnCooldown(),
-                skillManager.getSkillR().getCooldownPercent());
+                skillManager.getSkillR().getCooldownPercent(),
+                rIcon);
     }
 
     private void drawCooldownIcon(Graphics2D g2, int x, int y, int size, String key,
-                                  boolean onCooldown, float cooldownPercent) {
-        if (onCooldown) {
-            g2.setColor(new Color(100, 100, 100, 180));
+                                  boolean onCooldown, float cooldownPercent, BufferedImage icon) {
+        // Draw the skill icon as background
+        if (icon != null) {
+            g2.drawImage(icon, x - 19, y - 18, 100, 100, null);
         } else {
-            g2.setColor(new Color(50, 150, 255, 180));
+            // Fallback if icon not loaded
+            if (onCooldown) {
+                g2.setColor(new Color(100, 100, 100, 180));
+            } else {
+                g2.setColor(new Color(50, 150, 255, 180));
+            }
+            g2.fillRoundRect(x, y, size, size, 10, 10);
         }
-        g2.fillRoundRect(x, y, size, size, 10, 10);
 
+        // Draw cooldown overlay (dark overlay from bottom to top)
         if (onCooldown) {
-            g2.setColor(new Color(0, 0, 0, 150));
+            g2.setColor(new Color(0, 0, 0, 180));
             int cooldownHeight = (int)(size * cooldownPercent);
             g2.fillRoundRect(x, y + size - cooldownHeight, size, cooldownHeight, 10, 10);
         }
 
+        // Draw border
+        g2.setColor(onCooldown ? new Color(150, 150, 150) : Color.WHITE);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(x, y, size, size, 10, 10);
+
+        // Draw key letter below the icon
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.BOLD, 20));
+        g2.setFont(new Font("Arial", Font.BOLD, 16));
         FontMetrics fm = g2.getFontMetrics();
         int textX = x + (size - fm.stringWidth(key)) / 2;
-        int textY = y + ((size - fm.getHeight()) / 2) + fm.getAscent();
-        g2.drawString(key, textX, textY);
+        int textY = y + size + 20;
+
+        // Background for text
+        g2.setColor(new Color(0, 0, 0, 150));
+        g2.fillRoundRect(textX - 5, textY - fm.getAscent(),
+                fm.stringWidth(key) + 10, fm.getHeight(), 5, 5);
 
         g2.setColor(Color.WHITE);
-        g2.setStroke(new java.awt.BasicStroke(2));
-        g2.drawRoundRect(x, y, size, size, 10, 10);
+        g2.drawString(key, textX, textY);
     }
+
 
     public GameState getGameState() {
         return gameState;

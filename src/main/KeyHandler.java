@@ -115,10 +115,10 @@ public class KeyHandler implements KeyListener {
     public void keyReleased(KeyEvent e) {
         int code = e.getKeyCode();
 
-        if (code == KeyEvent.VK_UP) upPressed = false;
-        if (code == KeyEvent.VK_DOWN) downPressed = false;
-        if (code == KeyEvent.VK_LEFT) leftPressed = false;
-        if (code == KeyEvent.VK_RIGHT) rightPressed = false;
+        if (code == KeyEvent.VK_UP || code == KeyEvent.VK_W) upPressed = false;
+        if (code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S) downPressed = false;
+        if (code == KeyEvent.VK_LEFT || code == KeyEvent.VK_A) leftPressed = false;
+        if (code == KeyEvent.VK_RIGHT || code == KeyEvent.VK_D) rightPressed = false;
         if (code == KeyEvent.VK_SPACE) attackPressed = false;
         if (code == KeyEvent.VK_Q) qPressed = false;
         if (code == KeyEvent.VK_E) ePressed = false;
