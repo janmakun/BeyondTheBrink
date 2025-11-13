@@ -32,6 +32,9 @@ public class NPC {
     }
 
     public void update() {
+        if (sprites == null) {
+            return; // Skip update if sprites aren't loaded
+        }
         // Update dialogue timer
         if (showDialogue && dialogueTimer > 0) {
             dialogueTimer--;
@@ -74,10 +77,18 @@ public class NPC {
     }
 
     public void draw(Graphics g, int cameraX, int cameraY) {
-        // Draw without camera offset (same as monsters)
-        if (sprites != null && currentFrame < sprites.length && sprites[currentFrame] != null) {
-            g.drawImage(sprites[currentFrame], x, y, width, height, null);
+        // Check if sprites are null before drawing
+        if (sprites == null || currentFrame >= sprites.length || sprites[currentFrame] == null) {
+            // Draw placeholder if sprites aren't loaded
+            g.setColor(Color.MAGENTA);
+            g.fillRect(x, y, width, height);
+            g.setColor(Color.WHITE);
+            g.drawString("NPC", x, y + height/2);
+            return;
         }
+
+        // Draw without camera offset (same as monsters)
+        g.drawImage(sprites[currentFrame], x, y, width, height, null);
 
         // Draw dialogue box if active
         if (showDialogue) {

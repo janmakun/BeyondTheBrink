@@ -28,7 +28,7 @@ public class ProjectileSkill extends Skill {
             this.x = charX;
             this.y = charY;
 
-            System.out.println("Skill E activated at character position: (" + x + ", " + y + ")");
+//            System.out.println("Skill E activated at character position: (" + x + ", " + y + ")");
         }
     }
 

@@ -31,7 +31,7 @@ public class SkillManager {
 
         // Skill E: Ranged skill - 11 frames, 8 frame delay, 240 frame cooldown (4 seconds)
         // Size: 500x500 (matches character size), Max range: 200 pixels
-        skillE = new ProjectileSkill(600, 600, 8, 11, 240, 200);
+        skillE = new ProjectileSkill(600, 600, 8, 12, 240, 200);
         skillE.setFrames(
                 resourceLoader.getSpriteArray("skillE_up"),
                 resourceLoader.getSpriteArray("skillE_down"),
@@ -40,7 +40,7 @@ public class SkillManager {
         );
 
         // Skill R: Power Up - 12 frames, 10 frame delay, 60 frame cooldown (1 second)
-        skillR = new Skill(150, 150, 10, 12, 60);
+        skillR = new Skill(150, 150, 6, 12, 60);
         skillR.setFrames(
                 resourceLoader.getSpriteArray("skillR_up"),
                 resourceLoader.getSpriteArray("skillR_down"),
@@ -102,21 +102,33 @@ public class SkillManager {
     }
 
     public void activateSkillQ(String direction) {
-        if (!character.isAttacking()) {
-            skillQ.activate(character.getX(), character.getY(), direction);
+        if (!skillQ.isOnCooldown() && !skillQ.isActive()) {
+            skillQ.activate( character.getX(), character.getY(), direction);
+            character.addSkillHitbox("skillQ", direction);
+
+            System.out.println("Skill Q activated with direction: " + direction);
         }
     }
 
     public void activateSkillE(String direction) {
-        if (!character.isAttacking()) {
-            skillE.activate(character.getX(), character.getY(), direction);
-            System.out.println("Skill E (Projectile) activated! Direction: " + direction);
+        if (!skillE.isOnCooldown() && !skillE.isActive()) {
+            skillE.activate( character.getX(), character.getY(), direction);
+
+            // ADD THIS LINE - Create damage hitbox
+            character.addSkillHitbox("skillE", direction);
+
+            System.out.println("Skill E activated with direction: " + direction);
         }
     }
 
     public void activateSkillR(String direction) {
-        if (!character.isAttacking()) {
-            skillR.activate(character.getX(), character.getY(), direction);
+        if (!skillR.isOnCooldown() && !skillR.isActive()) {
+            skillR.activate( character.getX(), character.getY(), direction);
+
+            // ADD THIS LINE - Create damage hitbox
+            character.addSkillHitbox("skillR", direction);
+
+            System.out.println("Skill R activated with direction: " + direction);
         }
     }
 
@@ -125,6 +137,7 @@ public class SkillManager {
         skillQ.update(character.getX(), character.getY());
         skillE.update(character.getX(), character.getY());
         skillR.update(character.getX(), character.getY());
+
     }
 
     public void draw(Graphics g, int cameraX, int cameraY) {

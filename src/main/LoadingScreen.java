@@ -11,15 +11,15 @@ public class LoadingScreen extends JPanel {
 
     private final int WIDTH = 960;
     private final int HEIGHT = 720;
-    private final int totalFrames = 25; // 26 frames minus the missing frame 13
+    private final int totalFrames = 25;
     private final int LAST_FRAME_INDEX = totalFrames - 1;
 
     private BufferedImage[] animationFrames;
     private int currentFrame = 0;
-    private int frameDelay = 2; // adjust speed
+    private int frameDelay = 2;
     private int frameCounter = 0;
-    private int completedCycles = 0; // Track completed animation cycles
-    private final int MIN_CYCLES = 2; // Minimum 2 complete cycles
+    private int completedCycles = 0;
+    private final int MIN_CYCLES = 3; // Increased from 2 to 3 for longer display
 
     private JFrame parentFrame;
     private Timer animationTimer;
@@ -27,13 +27,12 @@ public class LoadingScreen extends JPanel {
     private ResourceLoader resourceLoader;
 
     private long startTime;
-    private final int MIN_DISPLAY_TIME = 1000; // Minimum 1 second (reduced since we're counting cycles)
-    private final int MAX_DISPLAY_TIME = 20000; // Increased failsafe max
+    private final int MIN_DISPLAY_TIME = 2000; // Increased to 2 seconds
+    private final int MAX_DISPLAY_TIME = 30000; // 30 seconds failsafe
     private boolean resourcesLoaded = false;
+    private boolean gameObjectsReady = false; // NEW: Track if game objects initialized
     private boolean hasTransitioned = false;
     private boolean framesLoaded = false;
-
-
 
     public LoadingScreen(JFrame frame, ResourceLoader loader) {
         this.parentFrame = frame;
@@ -42,10 +41,7 @@ public class LoadingScreen extends JPanel {
         setBackground(Color.BLACK);
         setDoubleBuffered(true);
 
-        // Start loading animation frames in background
         loadAnimationFramesAsync();
-
-        // Start animation timer immediately (will show loading text until frames ready)
         startAnimation();
     }
 
@@ -55,8 +51,8 @@ public class LoadingScreen extends JPanel {
 
             try {
                 int frameIndex = 0;
-                for (int i = 1; i <= 26; i++) { // Loop through 1-26
-                    if (i == 13) { // Skip frame 13
+                for (int i = 1; i <= 26; i++) {
+                    if (i == 13) {
                         System.out.println("⚠️ Skipping frame 13 (not available)");
                         continue;
                     }
@@ -69,7 +65,6 @@ public class LoadingScreen extends JPanel {
                     }
 
                     BufferedImage raw = ImageIO.read(file);
-                    // Create compatible image for better rendering performance
                     GraphicsConfiguration gc = GraphicsEnvironment
                             .getLocalGraphicsEnvironment()
                             .getDefaultScreenDevice()
@@ -88,7 +83,7 @@ public class LoadingScreen extends JPanel {
                 }
 
                 framesLoaded = true;
-                System.out.println("All animation frames loaded!");
+                System.out.println("✅ All animation frames loaded!");
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -107,8 +102,9 @@ public class LoadingScreen extends JPanel {
         });
         animationTimer.start();
 
-        // Monitor resource loading progress
+        // Monitor resource loading AND game initialization
         new Thread(() -> {
+            // Step 1: Wait for resources to finish loading
             while (!resourceLoader.isFinished()) {
                 try {
                     Thread.sleep(100);
@@ -117,19 +113,29 @@ public class LoadingScreen extends JPanel {
                 }
             }
             resourcesLoaded = true;
-            System.out.println("Resources confirmed loaded in LoadingScreen!");
+            System.out.println("✅ Resources loaded!");
+
+            // Step 2: Give extra time for game objects to initialize
+            // This allows the GamePanel's run() method to complete initializeGameObjects()
+            try {
+                Thread.sleep(800); // Extra buffer time for game object initialization
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+
+            gameObjectsReady = true;
+            System.out.println("✅ Game objects ready!");
+
         }, "ResourceMonitor").start();
     }
 
     private void updateAnimation() {
-        // Only animate if frames are loaded
         if (framesLoaded) {
             frameCounter++;
             if (frameCounter >= frameDelay) {
                 frameCounter = 0;
                 currentFrame++;
 
-                // Check if we completed a full cycle
                 if (currentFrame > LAST_FRAME_INDEX) {
                     currentFrame = 0;
                     completedCycles++;
@@ -139,12 +145,14 @@ public class LoadingScreen extends JPanel {
 
             long elapsed = System.currentTimeMillis() - startTime;
 
-            // Only transition if:
+            // Only transition if ALL conditions are met:
             // 1. Resources are loaded
-            // 2. Minimum time has passed
-            // 3. At least 2 complete cycles done
-            // 4. Currently on last frame (for smooth transition)
+            // 2. Game objects are ready
+            // 3. Minimum time has passed
+            // 4. At least 3 complete cycles done
+            // 5. Currently on last frame (for smooth transition)
             if (resourcesLoaded &&
+                    gameObjectsReady &&
                     elapsed >= MIN_DISPLAY_TIME &&
                     completedCycles >= MIN_CYCLES &&
                     currentFrame == LAST_FRAME_INDEX &&
@@ -199,31 +207,25 @@ public class LoadingScreen extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        // Enable rendering hints for better performance
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         if (framesLoaded && animationFrames != null && animationFrames[currentFrame] != null) {
-            // Draw animation frame (your animated loading screen shows the progress)
             g2.drawImage(animationFrames[currentFrame], 0, 0, null);
         } else {
-            // Show elegant loading state while frames are being loaded
             drawInitialLoadingScreen(g2);
         }
     }
 
     private void drawInitialLoadingScreen(Graphics2D g2) {
-        // Position at bottom left
         int margin = 30;
         int spinnerSize = 40;
         int spinnerX = margin + spinnerSize / 2;
         int spinnerY = HEIGHT - margin - spinnerSize / 2;
 
-        // Draw circular loading spinner
         long time = System.currentTimeMillis();
-        float rotation = (time % 1000) / 1000.0f * 360.0f; // Full rotation per second
+        float rotation = (time % 1000) / 1000.0f * 360.0f;
 
-        // Enable HIGH QUALITY rendering for smooth circles
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
@@ -231,14 +233,11 @@ public class LoadingScreen extends JPanel {
 
         g2.setStroke(new BasicStroke(4.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
-        // Background circle (dim)
         g2.setColor(new Color(80, 80, 80, 150));
         g2.drawOval(spinnerX - spinnerSize / 2, spinnerY - spinnerSize / 2, spinnerSize, spinnerSize);
 
-        // Animated arc (bright) - use floating point for smoother rotation
         g2.setColor(Color.WHITE);
 
-        // Create a smoother arc by using Graphics2D transform
         Graphics2D g2d = (Graphics2D) g2.create();
         g2d.translate(spinnerX, spinnerY);
         g2d.rotate(Math.toRadians(rotation));
@@ -248,7 +247,6 @@ public class LoadingScreen extends JPanel {
                 spinnerSize, spinnerSize, 0, 270);
         g2d.dispose();
 
-        // "Loading..." text next to spinner
         g2.setFont(new Font("Arial", Font.PLAIN, 18));
         int dotCount = (int) ((time / 500) % 4);
         String dots = ".".repeat(dotCount);

@@ -2,6 +2,8 @@ package main;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;  // ADD THIS LINE
+import java.util.List;       // ADD THIS LINE
 
 public class CharacterLoad {
 
@@ -58,6 +60,8 @@ public class CharacterLoad {
     private String lastDirection = "down";
 
     private boolean showingSword = false; // For sword visibility toggle
+    private DamageSystem.DamageableEntity health;
+    private List<DamageSystem.AttackHitbox> activeAttackHitboxes;
 
     public CharacterLoad(int startX, int startY, ResourceLoader resourceLoader) {
         this.x = startX;
@@ -108,6 +112,11 @@ public class CharacterLoad {
         System.out.println("  Walking sprite size: " + width + "x" + height);
         System.out.println("  Attack sprite size: " + attackWidth + "x" + attackHeight);
         System.out.println("  Blue sword walking sprites loaded: " + (blueSwordWalkDown != null));
+
+        // ADD THESE LINES
+        this.health = new DamageSystem.DamageableEntity(100, x, y, width, height);
+        this.activeAttackHitboxes = new ArrayList<>();
+        System.out.println("Character health initialized: 100 HP");
     }
 
     public void setSwordType(SwordType swordType) {
@@ -139,10 +148,21 @@ public class CharacterLoad {
             attackDirection = direction;
             attackFrameIndex = 0;
             attackFrameCount = 0;
+
+            // ADD THESE LINES
+            boolean isRedSword = (currentSwordType == SwordType.RED_SWORD);
+            DamageSystem.AttackHitbox hitbox = DamageSystem.createAttackHitbox(
+                    x, y, direction, "basic", isRedSword
+            );
+            activeAttackHitboxes.add(hitbox);
+            System.out.println("Attack hitbox created! Damage: " + hitbox.getDamage());
         }
     }
 
     public void update(boolean moving, String direction) {
+        health.updatePosition(x, y);
+        activeAttackHitboxes.removeIf(h -> !h.isActive());
+
         if (isAttacking) {
             attackFrameCount++;
             if (attackFrameCount >= frameDelayBasicAtt) {
@@ -350,5 +370,33 @@ public class CharacterLoad {
             case "down":
             default: return downStaySprites;
         }
+    }
+    public DamageSystem.DamageableEntity getHealth() {
+        return health;
+    }
+
+    public List<DamageSystem.AttackHitbox> getActiveAttackHitboxes() {
+        return activeAttackHitboxes;
+    }
+
+    public boolean takeDamage(int damage) {
+        boolean wasHit = health.takeDamage(damage);
+        if (wasHit) {
+            System.out.println("Player took " + damage + " damage! HP: " +
+                    health.getCurrentHealth() + "/" + health.getMaxHealth());
+            if (health.isDead()) {
+                System.out.println("PLAYER DIED!");
+            }
+        }
+        return wasHit;
+    }
+
+    public void addSkillHitbox(String skillType, String direction) {
+        boolean isRedSword = (currentSwordType == SwordType.RED_SWORD);
+        DamageSystem.AttackHitbox hitbox = DamageSystem.createAttackHitbox(
+                x, y, direction, skillType, isRedSword
+        );
+        activeAttackHitboxes.add(hitbox);
+        System.out.println("Skill " + skillType + " hitbox created! Damage: " + hitbox.getDamage());
     }
 }

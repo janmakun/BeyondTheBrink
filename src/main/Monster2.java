@@ -14,7 +14,7 @@ public class Monster2 {
     // Movement
     private String direction = "left";
     private boolean moving = false;
-    private int speed = 3; // Faster than Monster
+    private int speed = 3;
 
     // Animation
     private BufferedImage[] leftWalkSprites;
@@ -24,7 +24,7 @@ public class Monster2 {
 
     private int animationFrame = 0;
     private int animationCounter = 0;
-    private int animationSpeed = 12; // Slightly faster animation
+    private int animationSpeed = 12;
 
     // Attack
     private boolean attacking = false;
@@ -40,13 +40,24 @@ public class Monster2 {
 
     // AI Behavior
     private int aiCounter = 0;
-    private int aiChangeDirection = 90; // Change direction faster than Monster
-    private int detectionRange = 350; // Longer detection range
+    private int aiChangeDirection = 90;
+    private int detectionRange = 350;
     private int attackRange = 90;
 
     // Flying/Hovering behavior
     private int verticalOffset = 0;
     private int hoverCounter = 0;
+
+    // Health System (stronger than Monster)
+    private DamageSystem.DamageableEntity health;
+    private int maxHealth = 150; // More HP than Monster
+    private HealthBar healthBar;
+
+    // Death Animation
+    private boolean isDying = false;
+    private int deathAnimCounter = 0;
+    private int deathAnimDuration = 60; // 1 second at 60fps
+    private int blinkInterval = 8; // Blink every 8 frames
 
     public Monster2(int x, int y, int spriteSize) {
         this.x = x;
@@ -55,11 +66,14 @@ public class Monster2 {
         this.width = spriteSize;
         this.height = spriteSize;
 
+        // Initialize health system
+        this.health = new DamageSystem.DamageableEntity(maxHealth, x, y, width, height);
+        this.healthBar = new HealthBar(maxHealth, 60, 8);
+
         loadSprites();
     }
 
     private void loadSprites() {
-        // Load walk sprites
         leftWalkSprites = new BufferedImage[2];
         leftWalkSprites[0] = loadAndScaleImage("res/Monster2/mons3left1.png");
         leftWalkSprites[1] = loadAndScaleImage("res/Monster2/mons3left2.png");
@@ -68,7 +82,6 @@ public class Monster2 {
         rightWalkSprites[0] = loadAndScaleImage("res/Monster2/dungmons1.png");
         rightWalkSprites[1] = loadAndScaleImage("res/Monster2/dungmons2.png");
 
-        // Load attack sprites
         leftAttackSprites = new BufferedImage[2];
         leftAttackSprites[0] = loadAndScaleImage("res/Monster2/mons3left3.png");
         leftAttackSprites[1] = loadAndScaleImage("res/Monster2/mons3left4.png");
@@ -96,11 +109,22 @@ public class Monster2 {
         }
     }
 
-    /**
-     * Update Monster2 AI, movement, and animation
-     */
     public void update(CharacterLoad player, Collision collision) {
-        // Update cooldown timer
+        // Update health position
+        health.updatePosition(x, y + verticalOffset);
+
+        // Handle death animation
+        if (health.isDead() && !isDying) {
+            isDying = true;
+            deathAnimCounter = 0;
+        }
+
+        if (isDying) {
+            deathAnimCounter++;
+            updateHover(); // Continue hovering during death
+            return; // Don't update AI during death animation
+        }
+
         if (onCooldown) {
             attackCooldownCounter++;
             if (attackCooldownCounter >= attackCooldown) {
@@ -109,7 +133,6 @@ public class Monster2 {
             }
         }
 
-        // Hovering animation (up and down movement)
         updateHover();
 
         if (attacking) {
@@ -119,7 +142,6 @@ public class Monster2 {
 
         if (preparingAttack) {
             updateAttackPreparation();
-            // Face the player while preparing
             int dx = player.getX() - x;
             if (dx > 0) {
                 direction = "right";
@@ -129,15 +151,12 @@ public class Monster2 {
             return;
         }
 
-        // Calculate distance to player
         int dx = player.getX() - x;
         int dy = player.getY() - y;
         double distance = Math.sqrt(dx * dx + dy * dy);
 
-        // Check if player is in attack range and not on cooldown
         if (distance < attackRange && !onCooldown) {
             startAttackPreparation();
-            // Face the player
             if (dx > 0) {
                 direction = "right";
             } else {
@@ -147,12 +166,9 @@ public class Monster2 {
             return;
         }
 
-        // Check if player is in detection range
         if (distance < detectionRange) {
-            // Chase player (now respects collision)
             chasePlayer(player, collision);
         } else {
-            // Wander randomly (now respects collision)
             wander(collision);
         }
 
@@ -161,7 +177,6 @@ public class Monster2 {
 
     private void updateHover() {
         hoverCounter++;
-        // Create smooth hovering motion
         verticalOffset = (int)(Math.sin(hoverCounter * 0.05) * 5);
     }
 
@@ -171,7 +186,6 @@ public class Monster2 {
         int dx = player.getX() - x;
         int dy = player.getY() - y;
 
-        // Normalize movement
         double distance = Math.sqrt(dx * dx + dy * dy);
         if (distance > 0) {
             int moveX = (int) ((dx / distance) * speed);
@@ -180,12 +194,10 @@ public class Monster2 {
             int nextX = x + moveX;
             int nextY = y + moveY;
 
-            // Check collision before moving
             if (!collision.checkCollision(nextX + 50, nextY + verticalOffset + 35, width - 100, height - 65)) {
                 x = nextX;
                 y = nextY;
 
-                // Update direction based on movement
                 if (Math.abs(dx) > Math.abs(dy)) {
                     direction = dx > 0 ? "right" : "left";
                 }
@@ -199,13 +211,11 @@ public class Monster2 {
         if (aiCounter >= aiChangeDirection) {
             aiCounter = 0;
 
-            // Randomly choose to move or stay still
             int random = (int) (Math.random() * 4);
             if (random == 0) {
                 moving = false;
             } else {
                 moving = true;
-                // Random direction
                 int dirRandom = (int) (Math.random() * 2);
                 direction = dirRandom == 0 ? "left" : "right";
             }
@@ -221,11 +231,9 @@ public class Monster2 {
                 nextX += speed;
             }
 
-            // Check collision
             if (!collision.checkCollision(nextX + 50, nextY + verticalOffset + 35, width - 100, height - 65)) {
                 x = nextX;
             } else {
-                // Hit a wall, change direction
                 direction = direction.equals("left") ? "right" : "left";
             }
         }
@@ -272,12 +280,10 @@ public class Monster2 {
     private void updateAttack() {
         attackCounter++;
 
-        // Switch between attack frames
         if (attackCounter % 15 == 0) {
             attackFrame = (attackFrame + 1) % 2;
         }
 
-        // End attack
         if (attackCounter >= attackDuration) {
             attacking = false;
             attackCounter = 0;
@@ -291,34 +297,32 @@ public class Monster2 {
         BufferedImage currentSprite = null;
 
         if (attacking) {
-            // Draw attack sprite
             if (direction.equals("left")) {
                 currentSprite = leftAttackSprites[attackFrame];
             } else {
                 currentSprite = rightAttackSprites[attackFrame];
             }
         } else if (preparingAttack) {
-            // Draw idle sprite with warning effect
             if (direction.equals("left")) {
                 currentSprite = leftWalkSprites[0];
             } else {
                 currentSprite = rightWalkSprites[0];
             }
 
-            // Warning indicator (yellow glow for Monster2)
+            // COMMENTED OUT: Attack warning visual
+            /*
             if (attackPrepareCounter % 20 < 10) {
                 g.setColor(new Color(255, 255, 0, 100));
                 g.fillRect(x, y + verticalOffset, width, height);
             }
+            */
         } else if (moving) {
-            // Draw walk sprite
             if (direction.equals("left")) {
                 currentSprite = leftWalkSprites[animationFrame];
             } else {
                 currentSprite = rightWalkSprites[animationFrame];
             }
         } else {
-            // Draw idle sprite
             if (direction.equals("left")) {
                 currentSprite = leftWalkSprites[0];
             } else {
@@ -326,13 +330,51 @@ public class Monster2 {
             }
         }
 
-        if (currentSprite != null) {
+        // Death animation
+        if (isDying) {
+            Graphics2D g2 = (Graphics2D) g;
+
+            // Calculate fade progress (0.0 to 1.0)
+            float fadeProgress = (float) deathAnimCounter / deathAnimDuration;
+
+            // Blinking effect (first half of animation)
+            boolean shouldShow = true;
+            if (fadeProgress < 0.5f) {
+                shouldShow = (deathAnimCounter / blinkInterval) % 2 == 0;
+            }
+
+            if (shouldShow && currentSprite != null) {
+                // Create a white tinted version that fades
+                BufferedImage tintedSprite = new BufferedImage(
+                        currentSprite.getWidth(),
+                        currentSprite.getHeight(),
+                        BufferedImage.TYPE_INT_ARGB
+                );
+
+                Graphics2D g2d = tintedSprite.createGraphics();
+                g2d.drawImage(currentSprite, 0, 0, null);
+
+                // Apply white tint that increases over time
+                float whiteTint = fadeProgress;
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, whiteTint));
+                g2d.setColor(Color.WHITE);
+                g2d.fillRect(0, 0, tintedSprite.getWidth(), tintedSprite.getHeight());
+                g2d.dispose();
+
+                // Draw with decreasing opacity
+                float alpha = 1.0f - fadeProgress;
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+                g2.drawImage(tintedSprite, x, y + verticalOffset, width, height, null);
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+            }
+        } else if (currentSprite != null) {
             g.drawImage(currentSprite, x, y + verticalOffset, width, height, null);
         }
 
-        // Debug: Draw hitbox
-        // g.setColor(Color.YELLOW);
-        // g.drawRect(x + 50, y + verticalOffset + 35, width - 100, height - 65);
+        // Draw health bar if damaged and not dying
+        if (!isDying && health.getCurrentHealth() < health.getMaxHealth()) {
+            healthBar.draw((Graphics2D)g, x + width/2, y + verticalOffset - 10, health.getHealthPercentage());
+        }
     }
 
     // Getters and setters
@@ -348,36 +390,43 @@ public class Monster2 {
         this.y = y;
     }
 
-    /**
-     * Set custom attack timing (in seconds)
-     */
     public void setAttackTiming(float prepareSeconds, float cooldownSeconds) {
         this.attackPrepareTime = (int)(prepareSeconds * 30);
         this.attackCooldown = (int)(cooldownSeconds * 30);
     }
 
-    /**
-     * Check if Monster2's attack hitbox overlaps with player
-     */
     public boolean isAttackingPlayer(CharacterLoad player) {
         if (!attacking) return false;
 
-        // Monster2 hitbox
         int monsterHitX = x + 50;
         int monsterHitY = y + verticalOffset + 35;
         int monsterHitW = width - 100;
         int monsterHitH = height - 65;
 
-        // Player hitbox
         int playerHitX = player.getX() + 50;
         int playerHitY = player.getY() + 35;
         int playerHitW = player.getWidth() - 100;
         int playerHitH = player.getHeight() - 65;
 
-        // Check overlap
         return monsterHitX < playerHitX + playerHitW &&
                 monsterHitX + monsterHitW > playerHitX &&
                 monsterHitY < playerHitY + playerHitH &&
                 monsterHitY + monsterHitH > playerHitY;
+    }
+
+    public boolean isDead() {
+        return isDying && deathAnimCounter >= deathAnimDuration;
+    }
+
+    public boolean takeDamage(int damage) {
+        return health.takeDamage(damage);
+    }
+
+    public Rectangle getHitbox() {
+        return new Rectangle(x + 50, y + verticalOffset + 35, width - 100, height - 65);
+    }
+
+    public DamageSystem.DamageableEntity getHealth() {
+        return health;
     }
 }
