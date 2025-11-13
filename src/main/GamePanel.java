@@ -402,7 +402,7 @@ public class GamePanel extends JPanel implements Runnable {
             map2.draw(g, 4000, 4000, 0, 0);
         }
 
-        collision.drawWalls(g2);
+//        collision.drawWalls(g2);
 
         // Draw NPC (with null check)
         if (blueRogueNPC != null) {
